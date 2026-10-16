@@ -1,0 +1,20 @@
+# Carpeta de diseño: prompts (.md) e imágenes de referencia (registro personal, no se sube)
+diseño/
+
+# Oracle: wallet TDE y credenciales
+wallet/
+*.p12
+*.sso
+*.dmp
+credenciales*.sql
+.env
+config.local.php
+
+# Video (pesado; se sube a YouTube/Drive y se deja el link)
+video/*.mp4
+video/*.mov
+
+# Sistema / editor
+.vscode/
+Thumbs.db
+desktop.ini

@@ -1,0 +1,50 @@
+SQL> 
+SQL> CONNECT juan/"&pwd_demo"@&conexion
+Conectado.
+SQL> SELECT USER AS usuario, SYS_CONTEXT('SYS_SESSION_ROLES', 'SUPERVISOR') AS es_supervisor FROM dual;
+
+USUARIO                                                                                                                                                         
+--------------------------------------------------------------------------------------------------------------------------------                                
+ES_SUPERVISOR                                                                                                                                                   
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+JUAN                                                                                                                                                            
+FALSE                                                                                                                                                           
+                                                                                                                                                                
+
+SQL> SELECT id_cliente, cedula, email, telefono, direccion
+  2  FROM   audinc_demo.clientes
+  3  WHERE  id_cliente <= 3
+  4  ORDER  BY id_cliente;
+
+ID_CLIENTE CEDULA       EMAIL                        TELEFONO   DIRECCION                                                                                       
+---------- ------------ ---------------------------- ---------- ------------------------                                                                        
+         1 *-****-0001  xxxx@ejemplo.com             ****-0001                                                                                                  
+         2 *-****-0002  xxxx@ejemplo.com             ****-0002                                                                                                  
+         3 *-****-0003  xxxx@ejemplo.com             ****-0003                                                                                                  
+
+SQL> 
+SQL> CONNECT luis/"&pwd_demo"@&conexion
+Conectado.
+SQL> SELECT USER AS usuario, SYS_CONTEXT('SYS_SESSION_ROLES', 'SUPERVISOR') AS es_supervisor FROM dual;
+
+USUARIO                                                                                                                                                         
+--------------------------------------------------------------------------------------------------------------------------------                                
+ES_SUPERVISOR                                                                                                                                                   
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+LUIS                                                                                                                                                            
+TRUE                                                                                                                                                            
+                                                                                                                                                                
+
+SQL> SELECT id_cliente, cedula, email, telefono, direccion
+  2  FROM   audinc_demo.clientes
+  3  WHERE  id_cliente <= 3
+  4  ORDER  BY id_cliente;
+
+ID_CLIENTE CEDULA       EMAIL                        TELEFONO   DIRECCION                                                                                       
+---------- ------------ ---------------------------- ---------- ------------------------                                                                        
+         1 9-0101-0001  laura.mora@ejemplo.com       8800-0001  Heredia, San Pablo                                                                              
+         2 9-0101-0002  carlos.vega@ejemplo.com      8800-0002  San Jose, Curridabat                                                                            
+         3 9-0101-0003  mariana.ulate@ejemplo.com    8800-0003  Alajuela, Grecia                                                                                
+
+SQL> 
+SQL> SPOOL OFF

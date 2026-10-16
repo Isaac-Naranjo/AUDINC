@@ -1,0 +1,38 @@
+SQL> 
+SQL> CONNECT juan/"&pwd_demo"@&conexion
+Conectado.
+SQL> SELECT nombre, salario FROM audinc_demo.empleados;
+SELECT nombre, salario FROM audinc_demo.empleados
+                                        *
+ERROR en línea 1:
+ORA-00942: la tabla o vista no existe 
+
+
+SQL> 
+SQL> CONNECT ana/"&pwd_demo"@&conexion
+Conectado.
+SQL> SELECT nombre, cedula FROM audinc_demo.clientes;
+SELECT nombre, cedula FROM audinc_demo.clientes
+                                       *
+ERROR en línea 1:
+ORA-00942: la tabla o vista no existe 
+
+
+SQL> 
+SQL> CONNECT luis/"&pwd_demo"@&conexion
+Conectado.
+SQL> SELECT COUNT(*) FROM audinc_owner.evaluacion;
+SELECT COUNT(*) FROM audinc_owner.evaluacion
+                                  *
+ERROR en línea 1:
+ORA-00942: la tabla o vista no existe 
+
+
+SQL> SELECT * FROM session_roles;
+
+ROLE                                                                                                                                                            
+--------------------------------------------------------------------------------------------------------------------------------                                
+SUPERVISOR                                                                                                                                                      
+
+SQL> 
+SQL> SPOOL OFF

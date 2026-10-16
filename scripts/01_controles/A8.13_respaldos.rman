@@ -1,0 +1,21 @@
+# =====================================================================
+# A8.13 Respaldo de la información                         (PHVA: Hacer)
+# Riesgo: R-CONF-04 · Tarea: T-06 · Verificación: CO-13
+#
+# !!! PENDIENTE DE APROBACIÓN — REQUIERE A8.24 (TDE) APLICADO ANTES !!!
+#  * La configuración de RMAN es de TODA la base (CDB): a partir de aquí
+#    TODOS los respaldos quedan cifrados, incluidos los de otros proyectos
+#    que usen RMAN en esta instancia (p. ej. C:\BACKUPGUARD_RMAN).
+#  * Restaurar esos respaldos exigirá el keystore TDE abierto.
+#
+# Ejecutar:   rman target / @A8.13_respaldos.rman
+# =====================================================================
+CONFIGURE ENCRYPTION FOR DATABASE ON;
+CONFIGURE ENCRYPTION ALGORITHM 'AES256';
+
+# Respaldo de prueba cifrado de la PDB del proyecto
+BACKUP PLUGGABLE DATABASE XEPDB1 TAG 'AUDINC_A8_13';
+
+# Evidencia
+SHOW ENCRYPTION FOR DATABASE;
+LIST BACKUP OF PLUGGABLE DATABASE XEPDB1 SUMMARY;

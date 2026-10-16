@@ -1,0 +1,40 @@
+SQL> 
+SQL> CONNECT juan/"&pwd_demo"@&conexion
+Conectado.
+SQL> SELECT vendedor, COUNT(*) AS ventas, SUM(monto) AS total
+  2  FROM   audinc_demo.ventas
+  3  GROUP  BY vendedor;
+
+VENDEDOR                           VENTAS      TOTAL                                                                                                            
+------------------------------ ---------- ----------                                                                                                            
+JUAN                                    6   546350,5                                                                                                            
+
+SQL> 
+SQL> -- Debe fallar: ORA-28115
+SQL> INSERT INTO audinc_demo.ventas (id_venta, id_cliente, vendedor, monto)
+  2  VALUES (999, 1, 'PEDRO', 1000);
+INSERT INTO audinc_demo.ventas (id_venta, id_cliente, vendedor, monto)
+                        *
+ERROR en línea 1:
+ORA-28115: la política viola la opción de comprobación 
+
+
+SQL> ROLLBACK;
+
+Rollback terminado.
+
+SQL> 
+SQL> CONNECT luis/"&pwd_demo"@&conexion
+Conectado.
+SQL> SELECT vendedor, COUNT(*) AS ventas, SUM(monto) AS total
+  2  FROM   audinc_demo.ventas
+  3  GROUP  BY vendedor
+  4  ORDER  BY vendedor;
+
+VENDEDOR                           VENTAS      TOTAL                                                                                                            
+------------------------------ ---------- ----------                                                                                                            
+JUAN                                    6   546350,5                                                                                                            
+PEDRO                                   6     710900                                                                                                            
+
+SQL> 
+SQL> SPOOL OFF

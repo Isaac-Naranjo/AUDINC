@@ -1,0 +1,77 @@
+SQL> 
+SQL> CONNECT pedro/"&pwd_demo"@&conexion
+Conectado.
+SQL> SELECT USER AS usuario, SYSTIMESTAMP AS hora FROM dual;
+
+USUARIO                                                                         
+--------------------------------------------------------------------------------
+HORA                                                                            
+---------------------------------------------------------------------------     
+PEDRO                                                                           
+15/10/26 23:39:37,993000 -06:00                                                 
+                                                                                
+
+SQL> DISCONNECT
+Desconectado de Oracle Database 21c Express Edition Release 21.0.0.0.0 - Production
+Version 21.3.0.0.0
+SQL> 
+SQL> CONNECT pedro/"Incorrecta_1"@&conexion
+ERROR:
+ORA-01017: nombre de usuario/contraseña no válidos; conexión denegada 
+
+
+SQL> CONNECT pedro/"Incorrecta_2"@&conexion
+ERROR:
+ORA-01017: nombre de usuario/contraseña no válidos; conexión denegada 
+
+
+SQL> CONNECT pedro/"Incorrecta_3"@&conexion
+ERROR:
+ORA-01017: nombre de usuario/contraseña no válidos; conexión denegada 
+
+
+SQL> -- Contraseña correcta, pero la cuenta ya debe estar bloqueada
+SQL> CONNECT pedro/"&pwd_demo"@&conexion
+ERROR:
+ORA-28000: La cuenta está bloqueada. 
+
+
+SQL> 
+SQL> CONNECT / AS SYSDBA
+Conectado.
+SQL> ALTER SESSION SET CONTAINER = XEPDB1;
+
+Sesión modificada.
+
+SQL> SELECT username, account_status, profile, lock_date FROM dba_users WHERE username = 'PEDRO';
+
+USERNAME                                                                        
+--------------------------------------------------------------------------------
+ACCOUNT_STATUS                                                                  
+--------------------------------                                                
+PROFILE                                                                         
+--------------------------------------------------------------------------------
+LOCK_DAT                                                                        
+--------                                                                        
+PEDRO                                                                           
+LOCKED(TIMED)                                                                   
+AUDINC_SEGURO                                                                   
+15/10/26                                                                        
+                                                                                
+
+SQL> ALTER USER pedro ACCOUNT UNLOCK;
+
+Usuario modificado.
+
+SQL> SELECT username, account_status FROM dba_users WHERE username = 'PEDRO';
+
+USERNAME                                                                        
+--------------------------------------------------------------------------------
+ACCOUNT_STATUS                                                                  
+--------------------------------                                                
+PEDRO                                                                           
+OPEN                                                                            
+                                                                                
+
+SQL> 
+SQL> SPOOL OFF

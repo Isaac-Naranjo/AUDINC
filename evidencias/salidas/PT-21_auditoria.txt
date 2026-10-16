@@ -1,0 +1,98 @@
+SQL> 
+SQL> -- Asegura que los registros en cola estén escritos
+SQL> CONNECT / AS SYSDBA
+Conectado.
+SQL> ALTER SESSION SET CONTAINER = XEPDB1;
+
+Sesión modificada.
+
+SQL> EXEC DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL
+
+Procedimiento PL/SQL terminado correctamente.
+
+SQL> 
+SQL> CONNECT ana/"&pwd_demo"@&conexion
+Conectado.
+SQL> SELECT * FROM session_roles;
+
+ROLE                                                                                                                                                                                                    
+--------------------------------------------------------------------------------------------------------------------------------                                                                        
+AUDITOR                                                                                                                                                                                                 
+AUDIT_VIEWER                                                                                                                                                                                            
+
+SQL> 
+SQL> SELECT TO_CHAR(event_timestamp, 'YYYY-MM-DD HH24:MI:SS') AS hora,
+  2  	    dbusername	      AS usuario,
+  3  	    action_name       AS accion,
+  4  	    object_name       AS objeto,
+  5  	    return_code,
+  6  	    unified_audit_policies AS politicas
+  7  FROM   unified_audit_trail
+  8  WHERE  event_timestamp > SYSTIMESTAMP - INTERVAL '30' MINUTE
+  9  AND    (unified_audit_policies LIKE '%AUDINC%' OR unified_audit_policies LIKE '%ORA_LOGON_FAILURES%')
+ 10  ORDER  BY event_timestamp;
+
+HORA                USUARIO    ACCION           OBJETO       RETURN_CODE POLITICAS                                                                                                                      
+------------------- ---------- ---------------- ------------ ----------- ----------------------------------------                                                                                       
+2026-10-15 23:18:45 AUDINC_APP LOGON                                1017 ORA_LOGON_FAILURES                                                                                                             
+2026-10-15 23:36:36 SYS        GRANT            UTL_FILE               0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:36:36 SYS        GRANT            UTL_HTTP               0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:36:36 SYS        GRANT            UTL_TCP                0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:36:36 SYS        GRANT            UTL_SMTP               0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:36:44 SYS        EXECUTE          DBMS_UTILITY           0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:36:48 SYS        EXECUTE          DBMS_UTILITY           0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:37:39 SYS        GRANT            UTL_HTTP               0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:37:39 SYS        GRANT            UTL_TCP                0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:37:39 SYS        GRANT            UTL_HTTP               0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:37:39 SYS        GRANT            UTL_HTTP               0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:37:39 SYS        GRANT            UTL_FILE               0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:37:39 SYS        GRANT            UTL_TCP                0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:37:39 SYS        GRANT            UTL_FILE               0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:37:39 SYS        REVOKE           UTL_FILE               0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:37:39 SYS        REVOKE           UTL_HTTP               0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:37:39 SYS        REVOKE           UTL_TCP                0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:37:39 SYS        REVOKE           UTL_SMTP               0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:37:46 SYS        EXECUTE          DBMS_UTILITY           0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:37:48 SYS        EXECUTE          DBMS_UTILITY           0 AUDINC_GESTION_ACCESOS                                                                                                         
+2026-10-15 23:39:07 PEDRO      LOGON                                1017 ORA_LOGON_FAILURES                                                                                                             
+2026-10-15 23:39:08 PEDRO      LOGON                                1017 ORA_LOGON_FAILURES                                                                                                             
+2026-10-15 23:39:09 PEDRO      LOGON                                1017 ORA_LOGON_FAILURES                                                                                                             
+2026-10-15 23:39:09 PEDRO      LOGON                               28000 ORA_LOGON_FAILURES                                                                                                             
+2026-10-15 23:39:09 SYS        ALTER USER       PEDRO                  0 ORA_SECURECONFIG, AUDINC_GESTION_ACCESOS                                                                                       
+2026-10-15 23:39:10 JUAN       SELECT           CLIENTES               0 AUDINC_ACCESO_DATOS                                                                                                            
+2026-10-15 23:39:10 LUIS       SELECT           CLIENTES               0 AUDINC_ACCESO_DATOS                                                                                                            
+2026-10-15 23:39:10 JUAN       SELECT           VENTAS                 0 AUDINC_ACCESO_DATOS                                                                                                            
+2026-10-15 23:39:10 JUAN       INSERT           VENTAS             28115 AUDINC_ACCESO_DATOS                                                                                                            
+2026-10-15 23:39:10 LUIS       SELECT           VENTAS                 0 AUDINC_ACCESO_DATOS                                                                                                            
+2026-10-15 23:39:10 JUAN       SELECT           EMPLEADOS           2004 AUDINC_ACCESO_DATOS                                                                                                            
+2026-10-15 23:39:10 ANA        SELECT           CLIENTES            2004 AUDINC_ACCESO_DATOS                                                                                                            
+2026-10-15 23:39:39 PEDRO      LOGON                                1017 ORA_LOGON_FAILURES                                                                                                             
+2026-10-15 23:39:40 PEDRO      LOGON                                1017 ORA_LOGON_FAILURES                                                                                                             
+2026-10-15 23:39:41 PEDRO      LOGON                                1017 ORA_LOGON_FAILURES                                                                                                             
+2026-10-15 23:39:41 PEDRO      LOGON                               28000 ORA_LOGON_FAILURES                                                                                                             
+2026-10-15 23:39:41 SYS        ALTER USER       PEDRO                  0 ORA_SECURECONFIG, AUDINC_GESTION_ACCESOS                                                                                       
+2026-10-15 23:39:41 JUAN       SELECT           CLIENTES               0 AUDINC_ACCESO_DATOS                                                                                                            
+2026-10-15 23:39:41 LUIS       SELECT           CLIENTES               0 AUDINC_ACCESO_DATOS                                                                                                            
+2026-10-15 23:39:41 JUAN       SELECT           VENTAS                 0 AUDINC_ACCESO_DATOS                                                                                                            
+2026-10-15 23:39:41 JUAN       INSERT           VENTAS             28115 AUDINC_ACCESO_DATOS                                                                                                            
+2026-10-15 23:39:41 LUIS       SELECT           VENTAS                 0 AUDINC_ACCESO_DATOS                                                                                                            
+2026-10-15 23:39:41 JUAN       SELECT           EMPLEADOS           2004 AUDINC_ACCESO_DATOS                                                                                                            
+2026-10-15 23:39:41 ANA        SELECT           CLIENTES            2004 AUDINC_ACCESO_DATOS                                                                                                            
+
+44 filas seleccionadas.
+
+SQL> 
+SQL> -- ANA no puede purgar el rastro (separación de funciones, A5.33): ORA-01031 / PLS-00201
+SQL> EXEC DBMS_AUDIT_MGMT.CLEAN_AUDIT_TRAIL(DBMS_AUDIT_MGMT.AUDIT_TRAIL_UNIFIED, FALSE)
+BEGIN DBMS_AUDIT_MGMT.CLEAN_AUDIT_TRAIL(DBMS_AUDIT_MGMT.AUDIT_TRAIL_UNIFIED, FALSE); END;
+
+                                        *
+ERROR en línea 1:
+ORA-06550: línea 1, columna 41:
+PLS-00201: el identificador 'DBMS_AUDIT_MGMT' se debe declarar
+ORA-06550: línea 1, columna 7:
+PL/SQL: Statement ignored 
+
+
+SQL> 
+SQL> SPOOL OFF
