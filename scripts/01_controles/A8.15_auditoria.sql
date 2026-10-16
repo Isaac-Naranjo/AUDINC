@@ -23,5 +23,10 @@ CREATE AUDIT POLICY audinc_gestion_accesos
           GRANT, REVOKE,
           CREATE PROFILE, ALTER PROFILE, DROP PROFILE;
 
+-- ¿Quién lanzó cada evaluación desde la aplicación? (CLIENT_IDENTIFIER = usuario final)
+CREATE AUDIT POLICY audinc_evaluaciones
+  ACTIONS INSERT ON audinc_owner.evaluacion;
+
 AUDIT POLICY audinc_acceso_datos;
 AUDIT POLICY audinc_gestion_accesos;
+AUDIT POLICY audinc_evaluaciones;

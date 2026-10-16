@@ -70,7 +70,10 @@ final class EvaluadorServicio
                     $idEvaluacion,
                     $r['id_co'],
                     $r['hallazgos'],
-                    json_encode($r['evidencia'], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+                    json_encode(
+                        $r['evidencia'],
+                        JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR
+                    ),
                     $r['nivel'],
                     $r['estado'],
                     $r['justificacion']

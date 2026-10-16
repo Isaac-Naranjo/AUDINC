@@ -9,8 +9,10 @@ ALTER SESSION SET CONTAINER = XEPDB1;
 -- Controles (01_controles/)
 NOAUDIT POLICY audinc_acceso_datos;
 NOAUDIT POLICY audinc_gestion_accesos;
+NOAUDIT POLICY audinc_evaluaciones;
 DROP AUDIT POLICY audinc_acceso_datos;
 DROP AUDIT POLICY audinc_gestion_accesos;
+DROP AUDIT POLICY audinc_evaluaciones;
 
 -- Restituye los grants originales de Oracle revocados por A8.12
 GRANT EXECUTE ON sys.utl_file TO PUBLIC;

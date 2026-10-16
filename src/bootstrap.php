@@ -25,6 +25,7 @@ function audinc_config(): array
             throw new RuntimeException('Falta config/config.local.php (copiar desde config.example.php)');
         }
         $config = require $ruta;
+        date_default_timezone_set($config['zona_horaria_php'] ?? 'America/Costa_Rica');
     }
     return $config;
 }

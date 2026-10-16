@@ -78,10 +78,33 @@ Pruebas unitarias del evaluador (no requieren Oracle): `php tests/ejecutar_prueb
 
 3. Abrir `http://localhost:8000`.
 
+### Autenticación
+
+El evaluador **no guarda contraseñas**: el usuario inicia sesión con su **cuenta de Oracle** y la aplicación
+verifica la contraseña abriendo una sesión en Oracle. Solo entran cuentas con el rol `AUDITOR` (en el entorno
+de prueba: `ANA`). Así se aplican a la aplicación los mismos controles del perfil `AUDINC_SEGURO`:
+bloqueo tras 3 intentos, expiración, complejidad, y el registro de intentos fallidos (`ORA_LOGON_FAILURES`).
+
+- Sesión PHP con cookie `HttpOnly` + `SameSite=Strict`, id regenerado al iniciar sesión, cierre por
+  15 min de inactividad (igual al `IDLE_TIME` del perfil) y duración máxima de 8 h.
+- Las consultas usan la cuenta de servicio `AUDINC_APP`, pero cada petición identifica al usuario final con
+  `DBMS_SESSION.SET_IDENTIFIER`: Oracle lo registra en `UNIFIED_AUDIT_TRAIL.CLIENT_IDENTIFIER`
+  (política `AUDINC_EVALUACIONES`) y queda como autor de cada evaluación.
+- Mismo mensaje de error para usuario inexistente, contraseña incorrecta o cuenta bloqueada (no se puede saber si un usuario existe).
+
+Prueba funcional: `php tests/PT-22_login.php` → `evidencias/salidas/PT-22_login.txt`.
+
 ### API
+
+Todas las rutas `/api/*` requieren sesión, excepto `/api/sesion`.
 
 | Método | Ruta | Devuelve |
 |---|---|---|
+| POST | `/api/sesion` | Inicia sesión. Cuerpo JSON: `{"usuario": "...", "contrasena": "..."}` |
+| GET | `/api/sesion` | Sesión actual (usuario, inicio, acceso anterior) |
+| DELETE | `/api/sesion` | Cierra sesión |
+| GET | `/api/mi-actividad` | Estado de la propia cuenta, acceso anterior, intentos fallidos (30 días) y evaluaciones lanzadas |
+| GET | `/api/resumen` | Última evaluación, evolución histórica, cobertura de cada riesgo, controles pendientes y excepciones por vencer |
 | GET | `/api/riesgos` | Riesgos R-CONF con impacto, probabilidad, nivel y clasificación |
 | GET | `/api/tareas` | Tareas del DBA con sus riesgos y controles |
 | GET | `/api/controles` | Controles ISO/IEC 27001:2022 del Anexo A |
@@ -95,7 +118,9 @@ Pruebas unitarias del evaluador (no requieren Oracle): `php tests/ejecutar_prueb
 
 ### Medidas de seguridad del backend
 
-- Solo se expone `public/`; el código y las credenciales quedan fuera de la raíz web.
+- Solo se expone `public/`; el código y las credenciales quedan fuera de la raíz web. Las rutas se validan con `realpath` (sin `../`).
+- Cabeceras `Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, `Cache-Control: no-store`.
+- Tiempo máximo de 30 s por llamada a Oracle.
 - Todas las consultas usan variables bind.
 - Los errores de Oracle se registran en el servidor; al cliente solo llega el código `ORA-xxxxx`.
 - `POST` exige `Content-Type: application/json`, lo que impide que otra página dispare evaluaciones (CSRF).

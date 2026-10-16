@@ -146,6 +146,7 @@ Implementación: `EvaluadorServicio::calificar()` y `aplicarExcepciones()` en `s
 | PT-19 | Funcional | PEDRO falla el login hasta superar `FAILED_LOGIN_ATTEMPTS` | `ORA-28000` cuenta bloqueada | SQL*Plus |
 | PT-20 | Funcional | JUAN consulta `AUDINC_DEMO.EMPLEADOS` | `ORA-00942` / `ORA-01031` | SQL*Plus |
 | PT-21 | Funcional | Leer `UNIFIED_AUDIT_TRAIL` tras PT-17–PT-20 | Eventos registrados con usuario, acción y hora | SQL Developer |
+| PT-22 | Funcional | Login de la aplicación: sin sesión, LUIS (sin rol AUDITOR), ANA (AUDITOR), evaluación y cierre de sesión | 401 sin sesión; 403 LUIS; cookie HttpOnly/SameSite; evaluación a nombre de ANA (`CLIENT_IDENTIFIER`); 401 tras cerrar sesión | `php tests/PT-22_login.php` |
 
 ---
 

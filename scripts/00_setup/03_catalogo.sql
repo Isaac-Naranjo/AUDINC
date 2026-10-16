@@ -84,7 +84,9 @@ CREATE TABLE audinc_owner.excepcion (
 CREATE TABLE audinc_owner.evaluacion (
   id_evaluacion NUMBER GENERATED ALWAYS AS IDENTITY CONSTRAINT evaluacion_pk PRIMARY KEY,
   fecha         TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
-  usuario_bd    VARCHAR2(128) DEFAULT SYS_CONTEXT('USERENV','SESSION_USER') NOT NULL,
+  -- Usuario final (CLIENT_IDENTIFIER que fija la aplicación) o, si no hay, el usuario de BD
+  usuario_bd    VARCHAR2(128) DEFAULT NVL(SYS_CONTEXT('USERENV','CLIENT_IDENTIFIER'),
+                                          SYS_CONTEXT('USERENV','SESSION_USER')) NOT NULL,
   observaciones VARCHAR2(400)
 );
 

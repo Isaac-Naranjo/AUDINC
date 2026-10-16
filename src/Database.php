@@ -25,8 +25,26 @@ final class Database
             throw new BaseDatosException('No se pudo conectar a la base de datos', oci_error()['message'] ?? '');
         }
         $this->conexion = $conexion;
+        // Ninguna llamada a Oracle puede bloquear la petición indefinidamente
+        oci_set_call_timeout($this->conexion, (int) ($config['timeout_ms'] ?? 30000));
         $this->ejecutar("ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS'");
         $this->ejecutar("ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH24:MI:SS'");
+        // ALTER SESSION no admite binds: se valida el formato (+hh:mm / -hh:mm) antes de concatenar
+        $zona = (string) ($config['zona_horaria'] ?? '-06:00');
+        if (!preg_match('/^[+-](0\d|1[0-4]):[0-5]\d$/', $zona)) {
+            throw new BaseDatosException('Zona horaria inválida en la configuración');
+        }
+        $this->ejecutar("ALTER SESSION SET TIME_ZONE = '{$zona}'");
+    }
+
+    /**
+     * Identifica al usuario final en la sesión de AUDINC_APP. Oracle lo registra en
+     * UNIFIED_AUDIT_TRAIL.CLIENT_IDENTIFIER y lo usa como autor de las evaluaciones,
+     * así cada acción hecha desde la aplicación es trazable hasta la persona (A8.15).
+     */
+    public function establecerUsuarioFinal(string $usuario): void
+    {
+        $this->ejecutar('BEGIN DBMS_SESSION.SET_IDENTIFIER(:u); END;', [':u' => $usuario]);
     }
 
     /** Filas como arreglos asociativos con claves en minúscula. */
@@ -83,8 +101,11 @@ final class Database
         }
         $id = '';
         oci_bind_by_name($sentencia, ':id', $id, 32);
-        $this->ejecutarParseada($sentencia);
-        oci_free_statement($sentencia);
+        try {
+            $this->ejecutarParseada($sentencia);
+        } finally {
+            oci_free_statement($sentencia);
+        }
         return (int) $id;
     }
 
@@ -129,17 +150,24 @@ final class Database
             $binds[$nombre] = $valor;
             oci_bind_by_name($sentencia, $nombre, $binds[$nombre]);
         }
-        $this->ejecutarParseada($sentencia);
+        try {
+            $this->ejecutarParseada($sentencia);
+        } catch (BaseDatosException $e) {
+            oci_free_statement($sentencia);
+            throw $e;
+        }
         return $sentencia;
     }
 
-    /** @param resource $sentencia */
+    /**
+     * Ejecuta sin liberar la sentencia: liberar es responsabilidad de quien la creó
+     * (así una falla no provoca una doble liberación que oculte el error de Oracle).
+     * @param resource $sentencia
+     */
     private function ejecutarParseada($sentencia): void
     {
         if (!@oci_execute($sentencia, OCI_NO_AUTO_COMMIT)) {
-            $detalle = oci_error($sentencia)['message'] ?? '';
-            oci_free_statement($sentencia);
-            throw new BaseDatosException('Error al ejecutar la consulta', $detalle);
+            throw new BaseDatosException('Error al ejecutar la consulta', oci_error($sentencia)['message'] ?? '');
         }
     }
 }
