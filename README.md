@@ -65,6 +65,13 @@ sqlplus /nolog @00_pruebas_funcionales.sql
 
 Ejecuta PT-17 a PT-21 conectándose como cada usuario de prueba. Las salidas quedan en `evidencias/salidas/PT-xx_*.txt`.
 
+Pruebas funcionales de la aplicación (con el evaluador corriendo; piden la contraseña de los usuarios de prueba):
+
+| Prueba | Comando | Qué demuestra |
+|---|---|---|
+| PT-22 | `php tests/PT-22_login.php` | Login con cuentas Oracle, rol AUDITOR, cookie segura, trazabilidad y cierre de sesión |
+| PT-23 | `php tests/PT-23_deteccion_y_correccion.php` | El evaluador **detecta** una brecha real (`GRANT` a `PUBLIC`) y registra su **corrección**. Deja dos evaluaciones en el histórico; el `REVOKE` se ejecuta siempre. Requiere ejecutarse en el servidor de Oracle (`sqlplus / as sysdba`). |
+
 Pruebas unitarias del evaluador (no requieren Oracle): `php tests/ejecutar_pruebas.php`
 
 ## Ejecutar el evaluador

@@ -147,6 +147,7 @@ Implementación: `EvaluadorServicio::calificar()` y `aplicarExcepciones()` en `s
 | PT-20 | Funcional | JUAN consulta `AUDINC_DEMO.EMPLEADOS` | `ORA-00942` / `ORA-01031` | SQL*Plus |
 | PT-21 | Funcional | Leer `UNIFIED_AUDIT_TRAIL` tras PT-17–PT-20 | Eventos registrados con usuario, acción y hora | SQL Developer |
 | PT-22 | Funcional | Login de la aplicación: sin sesión, LUIS (sin rol AUDITOR), ANA (AUDITOR), evaluación y cierre de sesión | 401 sin sesión; 403 LUIS; cookie HttpOnly/SameSite; evaluación a nombre de ANA (`CLIENT_IDENTIFIER`); 401 tras cerrar sesión | `php tests/PT-22_login.php` |
+| PT-23 | Funcional | Ciclo Verificar → Actuar: `GRANT SELECT` de `CLIENTES` a `PUBLIC`, evaluación, `REVOKE`, evaluación | 1.ª evaluación: CO-02 No cumple con el permiso como evidencia; 2.ª: CO-02 Cumple. El `REVOKE` se ejecuta siempre | `php tests/PT-23_deteccion_y_correccion.php` |
 
 ---
 

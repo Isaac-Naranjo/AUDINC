@@ -1,13 +1,13 @@
-PT-22 · Login de la aplicación AUDINC · 2026-10-16 00:24:09
+PT-22 · Login de la aplicación AUDINC · 2026-10-16 08:57:55
 ----------------------------------------------------------------------------------------------------
-[OK] Sin sesión: GET /api/resumen                           esperado 401, obtenido 401 
-[OK] LUIS (SUPERVISOR, sin rol AUDITOR) inicia sesión       esperado 403, obtenido 403 
-[OK] ANA (rol AUDITOR) inicia sesión                        esperado 200, obtenido 200 
-[OK] Cookie de sesión con HttpOnly y SameSite=Strict        esperado 1, obtenido 1 
-[OK] ANA consulta su propia actividad                        esperado 200, obtenido 200 (acceso anterior: 2026-10-16 00:23:50)
-[OK] ANA lanza una evaluación                               esperado 201, obtenido 201 
-[OK] La evaluación queda a nombre de ANA (CLIENT_IDENTIFIER) esperado 1, obtenido 1 (usuario_bd = ANA)
-[OK] Cierre de sesión                                       esperado 204, obtenido 204 
-[OK] Con la cookie anterior tras cerrar sesión              esperado 401, obtenido 401 
+[OK] Sin sesión: GET /api/resumen                              esperado 401, obtenido 401 
+[OK] LUIS (SUPERVISOR, sin rol AUDITOR) inicia sesión          esperado 403, obtenido 403 
+[OK] ANA (rol AUDITOR) inicia sesión                           esperado 200, obtenido 200 
+[OK] Cookie de sesión con HttpOnly y SameSite=Strict           esperado true, obtenido true 
+[OK] ANA consulta su propia actividad                           esperado 200, obtenido 200 (acceso anterior: 2026-10-16 08:57:11)
+[OK] ANA lanza una evaluación                                  esperado 201, obtenido 201 
+[OK] La evaluación queda a nombre de ANA (CLIENT_IDENTIFIER)   esperado 'ANA', obtenido 'ANA' 
+[OK] Cierre de sesión                                          esperado 204, obtenido 204 
+[OK] Con la cookie anterior tras cerrar sesión                 esperado 401, obtenido 401 
 ----------------------------------------------------------------------------------------------------
 RESULTADO: todos los casos OK

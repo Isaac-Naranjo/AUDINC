@@ -355,4 +355,9 @@ INSERT INTO audinc_owner.prueba VALUES ('PT-22', 'CO-09', 'FUNCIONAL',
   '401 sin sesión; 403 LUIS; ANA entra con cookie HttpOnly/SameSite; evaluación a nombre de ANA; 401 tras cerrar sesión',
   'php tests/PT-22_login.php');
 
+INSERT INTO audinc_owner.prueba VALUES ('PT-23', 'CO-02', 'FUNCIONAL',
+  'Ciclo Verificar -> Actuar: GRANT SELECT de CLIENTES a PUBLIC, evaluación, REVOKE, evaluación',
+  'Primera evaluación: CO-02 No cumple con el permiso como evidencia; segunda: CO-02 Cumple',
+  'php tests/PT-23_deteccion_y_correccion.php');
+
 COMMIT;

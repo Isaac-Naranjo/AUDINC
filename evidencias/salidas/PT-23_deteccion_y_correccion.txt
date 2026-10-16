@@ -1,0 +1,14 @@
+PT-23 · Detección y corrección de una brecha (A5.15 / CO-02) · 2026-10-16 08:58:00
+----------------------------------------------------------------------------------------------------
+[OK] Inicio de sesión como ANA (AUDITOR)                       esperado 200, obtenido 200 
+Paso 1 · SYSDBA: GRANT SELECT ON audinc_demo.clientes TO PUBLIC
+[OK] Evaluación registrada (PT-23 paso 1: brecha introducida (GRANT a PUBLIC)) esperado 201, obtenido 201 → evaluación #15
+[OK] CO-02 detecta la brecha: estado                            esperado 'No cumple', obtenido 'No cumple' 
+[OK] CO-02 detecta la brecha: hallazgos                         esperado 1, obtenido 1 
+[OK] La evidencia muestra el permiso concedido                  esperado ["CLIENTES","SELECT"], obtenido ["CLIENTES","SELECT"] 
+Paso 3 · SYSDBA: REVOKE SELECT ON audinc_demo.clientes FROM PUBLIC
+[OK] Evaluación registrada (PT-23 paso 2: brecha corregida (REVOKE a PUBLIC)) esperado 201, obtenido 201 → evaluación #16
+[OK] CO-02 tras la corrección: estado                          esperado 'Cumple', obtenido 'Cumple' 
+[OK] CO-02 tras la corrección: hallazgos                       esperado 0, obtenido 0 (nivel 3: Sin hallazgos)
+----------------------------------------------------------------------------------------------------
+RESULTADO: todos los casos OK

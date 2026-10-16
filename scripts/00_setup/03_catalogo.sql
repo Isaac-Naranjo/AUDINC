@@ -62,7 +62,7 @@ CREATE TABLE audinc_owner.prueba (
                        CHECK (tipo IN ('CONSULTA','FUNCIONAL','CONFIGURACION')),
   procedimiento      VARCHAR2(400) NOT NULL,
   resultado_esperado VARCHAR2(200) NOT NULL,
-  herramienta        VARCHAR2(40)  NOT NULL
+  herramienta        VARCHAR2(80)  NOT NULL
 );
 
 -- Excepciones aprobadas (aceptación de riesgo, fase Actuar). Un hallazgo cuyo
