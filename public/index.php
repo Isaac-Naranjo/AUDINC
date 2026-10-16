@@ -70,7 +70,17 @@ function cuerpoJson(): array
 $metodo = $_SERVER['REQUEST_METHOD'];
 $ruta   = rtrim((string) parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/') ?: '/';
 
-if ($ruta === '/') {
+// Interfaz web: se sirve desde src/Vista (fuera de public/) para enviarla con su propia CSP.
+// Solo recursos propios: sin CDN, sin scripts ni estilos en línea.
+if ($ruta === '/' && $metodo === 'GET') {
+    header('Content-Type: text/html; charset=utf-8');
+    header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; "
+         . "connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'");
+    readfile(dirname(__DIR__) . '/src/Vista/app.html');
+    exit;
+}
+
+if ($ruta === '/api') {
     responder(200, [
         'aplicacion' => 'AUDINC - Evaluador de confidencialidad ISO/IEC 27001:2022',
         'autenticacion' => 'POST /api/sesion {"usuario","contrasena"} con una cuenta Oracle con rol AUDITOR',
@@ -92,6 +102,10 @@ if ($ruta === '/') {
             'POST   /api/evaluaciones   {"observaciones": "..."}',
         ],
     ]);
+}
+
+if (!str_starts_with($ruta, '/api/')) {
+    responder(404, ['error' => 'Ruta no encontrada']);
 }
 
 try {

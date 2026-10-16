@@ -7,7 +7,7 @@ Evalúa controles del Anexo A de ISO/IEC 27001:2022 que mitigan riesgos de **con
 
 | Carpeta | Contenido | PHVA |
 |---|---|---|
-| `public/` | Punto de entrada web (única carpeta expuesta por el servidor) | — |
+| `public/` | Punto de entrada web y recursos del front (única carpeta expuesta por el servidor) | — |
 | `src/` | Backend PHP: conexión OCI8, repositorios y servicio de evaluación | Verificar |
 | `config/` | `config.example.php` (plantilla); `config.local.php` con la contraseña, ignorado por git | — |
 | `docs/` | Catálogo de riesgos, tareas, controles y pruebas | Planificar |
@@ -76,7 +76,18 @@ Pruebas unitarias del evaluador (no requieren Oracle): `php tests/ejecutar_prueb
    php -S localhost:8000 -t public public/index.php
    ```
 
-3. Abrir `http://localhost:8000`.
+3. Abrir `http://localhost:8000` e iniciar sesión con una cuenta Oracle con rol `AUDITOR` (en el entorno de prueba: `ANA`).
+
+### Interfaz web
+
+Menú lateral con: Inicio (resumen, evolución PHVA, cobertura por riesgo), Evaluaciones (con el detalle de la
+evidencia de cada control), Matriz de evaluación (filtrable), Riesgos (mapa de calor), Tareas del DBA,
+Controles ISO, Controles observables (con su consulta SQL), Batería de pruebas, Excepciones y Mi actividad.
+
+- HTML, CSS y JavaScript propios, sin frameworks ni CDN (`public/assets/`); funciona sin conexión a internet.
+- Política de seguridad de contenido estricta: solo recursos del propio servidor, sin scripts ni estilos en línea.
+- Todo el contenido dinámico se inserta como texto (`textContent`), nunca como HTML, para evitar XSS con datos de la base.
+- Adaptable a celular (el menú se convierte en panel deslizable) y con modo oscuro automático.
 
 ### Autenticación
 

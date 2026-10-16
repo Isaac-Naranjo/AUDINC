@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>AUDINC · Evaluador ISO 27001</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/app.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+
+  <!-- Inicio de sesión -->
+  <section id="login" class="login" hidden>
+    <form id="form-login" class="login-tarjeta" autocomplete="on" novalidate>
+      <div class="login-marca">
+        <img src="/assets/favicon.svg" alt="" width="40" height="40">
+        <div>
+          <h1>AUDINC</h1>
+          <p>Evaluador de confidencialidad · ISO/IEC 27001:2022</p>
+        </div>
+      </div>
+      <label for="login-usuario">Usuario Oracle</label>
+      <input id="login-usuario" name="usuario" autocomplete="username" required maxlength="128" spellcheck="false">
+      <label for="login-contrasena">Contraseña</label>
+      <input id="login-contrasena" name="contrasena" type="password" autocomplete="current-password" required maxlength="128">
+      <p id="login-error" class="login-error" role="alert" hidden></p>
+      <button type="submit" class="boton boton-primario boton-bloque">Iniciar sesión</button>
+      <p class="login-nota">Acceso restringido a cuentas con el rol <strong>AUDITOR</strong>.
+        La contraseña la valida Oracle: tras 3 intentos fallidos la cuenta se bloquea.</p>
+    </form>
+  </section>
+
+  <!-- Aplicación -->
+  <div id="app" class="app" hidden>
+    <aside id="menu" class="menu" aria-label="Menú principal">
+      <div class="menu-marca">
+        <img src="/assets/favicon.svg" alt="" width="30" height="30">
+        <div>
+          <strong>AUDINC</strong>
+          <span>ISO/IEC 27001:2022</span>
+        </div>
+      </div>
+      <nav>
+        <p class="menu-grupo">General</p>
+        <a href="#/inicio" data-ruta="inicio">Inicio</a>
+        <a href="#/evaluaciones" data-ruta="evaluaciones">Evaluaciones</a>
+        <a href="#/matriz" data-ruta="matriz">Matriz de evaluación</a>
+        <p class="menu-grupo">Catálogo</p>
+        <a href="#/riesgos" data-ruta="riesgos">Riesgos</a>
+        <a href="#/tareas" data-ruta="tareas">Tareas del DBA</a>
+        <a href="#/controles" data-ruta="controles">Controles ISO</a>
+        <a href="#/observables" data-ruta="observables">Controles observables</a>
+        <a href="#/pruebas" data-ruta="pruebas">Batería de pruebas</a>
+        <p class="menu-grupo">Gestión</p>
+        <a href="#/excepciones" data-ruta="excepciones">Excepciones</a>
+        <a href="#/actividad" data-ruta="actividad">Mi actividad</a>
+      </nav>
+      <div class="menu-pie">
+        <div class="menu-usuario">
+          <span class="avatar" id="avatar" aria-hidden="true"></span>
+          <div>
+            <strong id="usuario-nombre"></strong>
+            <span>Auditor</span>
+          </div>
+        </div>
+        <button id="boton-salir" class="boton boton-fantasma boton-bloque" type="button">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <div class="principal">
+      <header class="barra">
+        <button id="boton-menu" class="boton-icono" type="button" aria-label="Abrir menú" aria-controls="menu" aria-expanded="false">☰</button>
+        <h2 id="titulo">Inicio</h2>
+        <button id="boton-evaluar" class="boton boton-primario" type="button">Ejecutar evaluación</button>
+      </header>
+      <div id="aviso" class="aviso" role="status" hidden></div>
+      <main id="contenido" class="contenido" tabindex="-1"></main>
+    </div>
+  </div>
+
+  <!-- Ejecutar evaluación -->
+  <dialog id="dialogo-evaluar" class="dialogo">
+    <form method="dialog" id="form-evaluar">
+      <h3>Ejecutar evaluación</h3>
+      <p>Se ejecutarán las consultas de evidencia de todos los controles observables y se guardará el resultado con su nombre.</p>
+      <label for="evaluar-observaciones">Observaciones (opcional)</label>
+      <textarea id="evaluar-observaciones" maxlength="400" rows="3" placeholder="Ej.: Evaluación después de aplicar A8.11"></textarea>
+      <div class="dialogo-acciones">
+        <button type="button" class="boton boton-fantasma" id="evaluar-cancelar">Cancelar</button>
+        <button type="submit" class="boton boton-primario" id="evaluar-confirmar">Ejecutar</button>
+      </div>
+    </form>
+  </dialog>
+
+</body>
+</html>
