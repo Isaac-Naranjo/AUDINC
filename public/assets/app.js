@@ -243,7 +243,32 @@ async function vistaInicio() {
     h('div', { class: 'kpi-pie', text: pie }));
 
   const exc = r.excepciones;
-  return [
+
+  // Cobertura por riesgo: las barras empiezan en 0 y se animan al mostrarse la vista
+  const barrasCobertura = [];
+  const listaCobertura = h('ul', { class: 'lista-riesgos' }, r.riesgos.map((riesgo) => {
+    const pct = Math.round(riesgo.cobertura * 100);
+    const relleno = h('span');
+    relleno.style.width = '0%';
+    const barra = h('div', { class: 'barra-progreso mal', role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': 100,
+      'aria-valuenow': pct, 'aria-label': `Cobertura de ${riesgo.id_riesgo}` }, relleno);
+    const cifra = h('span', { text: `0/${riesgo.controles} · 0%` });
+    barrasCobertura.push({ barra, relleno, cifra, pct, cumplen: riesgo.cumplen, controles: riesgo.controles });
+    // El ID va neutro; el riesgo inherente (antes de los controles) se muestra aparte, como contorno,
+    // para no confundirlo con el color de la barra, que es la cobertura actual.
+    const clasificacion = riesgo.nivel >= 15 ? 'Alto' : riesgo.nivel >= 8 ? 'Medio' : 'Bajo';
+    return h('li', null,
+      h('div', { class: 'fila' },
+        h('span', { class: 'fila-riesgo' },
+          h('span', { class: 'chip', text: riesgo.id_riesgo }), ' ', riesgo.nombre, ' ',
+          h('span', { class: `inherente ${claseRiesgo(riesgo.nivel)}`,
+            title: 'Riesgo inherente: Impacto × Probabilidad, antes de aplicar controles',
+            text: `Inherente: ${clasificacion} · ${riesgo.nivel}` })),
+        cifra),
+      barra);
+  }));
+
+  const nodos = [
     h('p', { class: 'intro' },
       `Última evaluación #${u.id_evaluacion} · ${fecha(u.fecha)} · por ${u.usuario_bd}`,
       u.observaciones ? ` · “${u.observaciones}”` : ''),
@@ -256,18 +281,9 @@ async function vistaInicio() {
         exc.por_vencer > 0 ? `${exc.por_vencer} vencen en 30 días` : `Próximo vencimiento: ${fecha(exc.proximo_vencimiento).slice(0, 10)}`)),
     h('div', { class: 'rejilla rejilla-2 seccion' },
       tarjeta('Evolución', 'Controles por estado en cada evaluación (PHVA)', graficoEvolucion(r.evolucion)),
-      tarjeta('Cobertura por riesgo', 'Controles que mitigan cada riesgo y cumplen en la última evaluación',
-        h('ul', { class: 'lista-riesgos' }, r.riesgos.map((riesgo) => {
-          const pct = Math.round(riesgo.cobertura * 100);
-          const clase = pct === 100 ? '' : pct >= 50 ? 'parcial' : 'mal';
-          const barra = h('span');
-          barra.style.width = `${pct}%`;
-          return h('li', null,
-            h('div', { class: 'fila' },
-              h('span', null, h('span', { class: `etiqueta ${claseRiesgo(riesgo.nivel)}`, text: riesgo.id_riesgo }), ' ', riesgo.nombre),
-              h('span', { text: `${riesgo.cumplen}/${riesgo.controles} · ${pct}%` })),
-            h('div', { class: `barra-progreso ${clase}` }, barra));
-        })))),
+      tarjeta('Cobertura por riesgo',
+        'La barra indica cuántos controles que mitigan el riesgo cumplen hoy. "Inherente" es la gravedad del riesgo antes de aplicar controles (Impacto × Probabilidad).',
+        listaCobertura)),
     h('div', { class: 'seccion' },
       tarjeta('Controles pendientes', r.pendientes.length ? 'No están en estado Cumple en la última evaluación' : null,
         r.pendientes.length === 0
@@ -278,6 +294,44 @@ async function vistaInicio() {
               etiquetaEstado(p.estado), medidorNivel(p.nivel)),
             h('p', { text: `${p.descripcion}. ${p.justificacion || ''}` })))))),
   ];
+  return { nodos, alMostrar: () => animarCobertura(barrasCobertura) };
+}
+
+/**
+ * Carga animada de las barras de cobertura: crecen de 0 al valor real en ~2 s,
+ * escalonadas, con el contador sincronizado y el color según el avance
+ * (rojo < 50 %, ámbar < 100 %, verde = 100 %).
+ */
+function animarCobertura(barras) {
+  const DURACION = 1700;          // ms por barra
+  const DESFASE = 90;             // ms entre una barra y la siguiente (total ≈ 2 s)
+  const suavizar = (t) => 1 - Math.pow(1 - t, 3);   // arranca rápido, frena al llegar
+  const claseSegun = (pct) => (pct >= 100 ? '' : pct >= 50 ? 'parcial' : 'mal');
+  const pintar = (b, avance) => {
+    const pct = b.pct * avance;
+    b.relleno.style.width = `${pct}%`;
+    b.barra.className = `barra-progreso ${claseSegun(Math.round(pct))}`;
+    // floor: "4/4" solo aparece cuando la barra llega a su valor final
+    b.cifra.textContent = `${Math.floor(b.cumplen * avance + 1e-9)}/${b.controles} · ${Math.round(pct)}%`;
+  };
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    barras.forEach((b) => pintar(b, 1));
+    return;
+  }
+  const inicio = performance.now();
+  const paso = (ahora) => {
+    let pendientes = false;
+    barras.forEach((b, i) => {
+      if (!b.barra.isConnected) return;          // el usuario ya salió de Inicio
+      const t = Math.min(Math.max((ahora - inicio - i * DESFASE) / DURACION, 0), 1);
+      pintar(b, suavizar(t));
+      b.barra.classList.toggle('animando', t > 0 && t < 1);
+      if (t < 1) pendientes = true;
+    });
+    if (pendientes) requestAnimationFrame(paso);
+  };
+  requestAnimationFrame(paso);
 }
 
 function graficoEvolucion(evolucion) {
@@ -597,9 +651,12 @@ async function enrutar() {
   const actual = ++navegacion;
   contenido.replaceChildren(h('div', { class: 'cargando', text: 'Cargando…' }));
   try {
-    const nodos = await vista();
+    // Una vista devuelve sus nodos, o { nodos, alMostrar } si necesita animarse al aparecer
+    const resultado = await vista();
     if (actual !== navegacion) return;           // el usuario ya navegó a otra vista
+    const nodos = Array.isArray(resultado) ? resultado : resultado.nodos;
     contenido.replaceChildren(...nodos);
+    if (!Array.isArray(resultado) && resultado.alMostrar) resultado.alMostrar();
   } catch (e) {
     if (actual !== navegacion || e.estado === 401) return;
     contenido.replaceChildren(h('div', { class: 'error-vista', text: `No se pudo cargar la vista: ${e.message}` }));
@@ -608,6 +665,24 @@ async function enrutar() {
 }
 
 window.addEventListener('hashchange', enrutar);
+
+/* Modo día / noche (la preferencia se guarda en el navegador; tema.js la aplica al cargar) */
+const botonTema = $('#boton-tema');
+function aplicarTema(tema) {
+  document.documentElement.setAttribute('data-tema', tema);
+  const etiqueta = tema === 'claro' ? 'Cambiar a modo noche' : 'Cambiar a modo día';
+  botonTema.setAttribute('aria-label', etiqueta);
+  botonTema.title = etiqueta;
+}
+botonTema.addEventListener('click', () => {
+  const nuevo = document.documentElement.getAttribute('data-tema') === 'claro' ? 'oscuro' : 'claro';
+  // Transición suave de colores solo durante el cambio
+  document.documentElement.classList.add('cambiando-tema');
+  aplicarTema(nuevo);
+  setTimeout(() => document.documentElement.classList.remove('cambiando-tema'), 450);
+  try { localStorage.setItem('audinc-tema', nuevo); } catch { /* almacenamiento bloqueado: solo esta visita */ }
+});
+aplicarTema(document.documentElement.getAttribute('data-tema') === 'claro' ? 'claro' : 'oscuro');
 
 /* Menú en pantallas pequeñas */
 function cerrarMenu() {

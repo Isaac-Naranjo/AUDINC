@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100">
+  <defs>
+    <filter id="brillo" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="cercano"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="lejano"/>
+      <feMerge>
+        <feMergeNode in="lejano"/>
+        <feMergeNode in="cercano"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g fill="none" stroke-linejoin="miter" stroke-miterlimit="10" filter="url(#brillo)">
+    <!-- Contorno neón -->
+    <path d="M12 14h22l28 36-28 36H12l28-36z" stroke="#39ff14" stroke-width="4.5"/>
+    <path d="M50 14h22l28 36-28 36H50l28-36z" stroke="#39ff14" stroke-width="4.5"/>
+    <!-- Núcleo claro del tubo de neón -->
+    <path d="M12 14h22l28 36-28 36H12l28-36z" stroke="#d8ffcf" stroke-width="1.4"/>
+    <path d="M50 14h22l28 36-28 36H50l28-36z" stroke="#d8ffcf" stroke-width="1.4"/>
+  </g>
+</svg>

@@ -94,7 +94,11 @@ Controles ISO, Controles observables (con su consulta SQL), Batería de pruebas,
 - HTML, CSS y JavaScript propios, sin frameworks ni CDN (`public/assets/`); funciona sin conexión a internet.
 - Política de seguridad de contenido estricta: solo recursos del propio servidor, sin scripts ni estilos en línea.
 - Todo el contenido dinámico se inserta como texto (`textContent`), nunca como HTML, para evitar XSS con datos de la base.
-- Adaptable a celular (el menú se convierte en panel deslizable) y con modo oscuro automático.
+- Tema negro con acento verde neón. El menú lateral queda contraído (flecha neón + íconos) y se despliega con
+  animación al pasar el mouse o al navegar con el teclado; en celular se abre tocando la flecha.
+- Botón de **modo día / noche** junto a "Ejecutar evaluación"; la preferencia se guarda en el navegador y se aplica
+  antes de pintar la página (`public/assets/tema.js`), sin destellos al recargar.
+- Respeta la preferencia del sistema de reducir animaciones (`prefers-reduced-motion`).
 
 ### Autenticación
 
