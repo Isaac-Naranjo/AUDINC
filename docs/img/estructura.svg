@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="590" viewBox="0 0 1000 590" role="img" aria-label="Estructura del repositorio AUDINC y su fase PHVA">
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0f0d"/>
+      <stop offset="1" stop-color="#060807"/>
+    </linearGradient>
+    <style>
+      .mono { font-family: ui-monospace, "Cascadia Code", Consolas, "DejaVu Sans Mono", monospace; }
+      .sans { font-family: "Segoe UI", Ubuntu, "Helvetica Neue", Arial, sans-serif; }
+      .rama { fill: #3a4a40; font-size: 17px; }
+      .carpeta { fill: #39ff14; font-size: 17px; font-weight: 600; }
+      .archivo { fill: #c9f7c0; font-size: 17px; }
+      .desc { fill: #a3ada8; font-size: 15px; }
+      .fase { font-size: 12px; font-weight: 700; letter-spacing: .06em; }
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="588" rx="18" fill="url(#fondo)" stroke="#39ff14" stroke-opacity=".25"/>
+
+  <!-- Barra de ventana -->
+  <circle cx="30" cy="30" r="6" fill="#ff5f57"/><circle cx="50" cy="30" r="6" fill="#febc2e"/><circle cx="70" cy="30" r="6" fill="#28c840"/>
+  <text x="500" y="35" text-anchor="middle" class="sans" font-size="14" fill="#6f7a75">Estructura del repositorio</text>
+  <line x1="1" y1="56" x2="999" y2="56" stroke="#39ff14" stroke-opacity=".12"/>
+
+  <!-- Árbol -->
+  <g class="mono">
+    <text x="32" y="92" class="carpeta">AUDINC/</text>
+
+    <text x="32" y="130" class="rama">├─</text><text x="64" y="130" class="carpeta">public/</text>
+    <text x="300" y="130" class="sans desc">Interfaz web y punto de entrada (única carpeta expuesta)</text>
+
+    <text x="32" y="168" class="rama">├─</text><text x="64" y="168" class="carpeta">src/</text>
+    <text x="300" y="168" class="sans desc">Backend PHP · OCI8 · servicio evaluador</text>
+
+    <text x="32" y="206" class="rama">├─</text><text x="64" y="206" class="carpeta">config/</text>
+    <text x="300" y="206" class="sans desc">Plantilla de configuración (sin contraseñas)</text>
+
+    <text x="32" y="244" class="rama">├─</text><text x="64" y="244" class="carpeta">docs/</text>
+    <text x="300" y="244" class="sans desc">Catálogo: riesgos, tareas, controles y pruebas</text>
+
+    <text x="32" y="282" class="rama">├─</text><text x="64" y="282" class="carpeta">scripts/</text>
+    <text x="32" y="320" class="rama">│  ├─</text><text x="96" y="320" class="carpeta">00_setup/</text>
+    <text x="300" y="320" class="sans desc">Esquema demo, roles, catálogo y cuenta del evaluador</text>
+    <text x="32" y="358" class="rama">│  ├─</text><text x="96" y="358" class="carpeta">01_controles/</text>
+    <text x="300" y="358" class="sans desc">Un script por control ISO (A5.x / A8.x)</text>
+    <text x="32" y="396" class="rama">│  ├─</text><text x="96" y="396" class="carpeta">02_verificacion/</text>
+    <text x="300" y="396" class="sans desc">Pruebas funcionales PT-17 … PT-21</text>
+    <text x="32" y="434" class="rama">│  ├─</text><text x="96" y="434" class="carpeta">03_correccion/</text>
+    <text x="300" y="434" class="sans desc">Acciones correctivas AC-01, AC-02 y excepciones</text>
+    <text x="32" y="472" class="rama">│  └─</text><text x="96" y="472" class="archivo">99_limpieza.sql</text>
+    <text x="300" y="472" class="sans desc">Deja la base como estaba</text>
+
+    <text x="32" y="510" class="rama">├─</text><text x="64" y="510" class="carpeta">tests/</text>
+    <text x="300" y="510" class="sans desc">Pruebas unitarias, PT-22 (login) y PT-23 (detección)</text>
+
+    <text x="32" y="548" class="rama">└─</text><text x="64" y="548" class="carpeta">evidencias/</text>
+    <text x="300" y="548" class="sans desc">Salidas de las pruebas, listas para auditar</text>
+  </g>
+
+  <!-- Fase PHVA de cada carpeta -->
+  <g class="sans fase" text-anchor="middle">
+    <rect x="852" y="153" width="116" height="22" rx="11" fill="#fbbf24" fill-opacity=".14" stroke="#fbbf24" stroke-opacity=".6"/><text x="910" y="168" fill="#fbbf24">VERIFICAR</text>
+    <rect x="852" y="229" width="116" height="22" rx="11" fill="#38bdf8" fill-opacity=".14" stroke="#38bdf8" stroke-opacity=".6"/><text x="910" y="244" fill="#38bdf8">PLANIFICAR</text>
+    <rect x="852" y="305" width="116" height="22" rx="11" fill="#38bdf8" fill-opacity=".14" stroke="#38bdf8" stroke-opacity=".6"/><text x="910" y="320" fill="#38bdf8">PLANIFICAR</text>
+    <rect x="852" y="343" width="116" height="22" rx="11" fill="#39ff14" fill-opacity=".14" stroke="#39ff14" stroke-opacity=".6"/><text x="910" y="358" fill="#39ff14">HACER</text>
+    <rect x="852" y="381" width="116" height="22" rx="11" fill="#fbbf24" fill-opacity=".14" stroke="#fbbf24" stroke-opacity=".6"/><text x="910" y="396" fill="#fbbf24">VERIFICAR</text>
+    <rect x="852" y="419" width="116" height="22" rx="11" fill="#f472b6" fill-opacity=".14" stroke="#f472b6" stroke-opacity=".6"/><text x="910" y="434" fill="#f472b6">ACTUAR</text>
+    <rect x="852" y="495" width="116" height="22" rx="11" fill="#fbbf24" fill-opacity=".14" stroke="#fbbf24" stroke-opacity=".6"/><text x="910" y="510" fill="#fbbf24">VERIFICAR</text>
+    <rect x="852" y="533" width="116" height="22" rx="11" fill="#fbbf24" fill-opacity=".14" stroke="#fbbf24" stroke-opacity=".6"/><text x="910" y="548" fill="#fbbf24">VERIFICAR</text>
+  </g>
+</svg>

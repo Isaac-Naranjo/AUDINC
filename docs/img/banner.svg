@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="300" viewBox="0 0 1280 300" role="img" aria-label="AUDINC: evaluador de confidencialidad ISO/IEC 27001:2022 para Oracle 21c XE">
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#040506"/>
+      <stop offset="1" stop-color="#08130c"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="0.2" cy="0.5" r="0.45">
+      <stop offset="0" stop-color="#39ff14" stop-opacity=".20"/>
+      <stop offset="1" stop-color="#39ff14" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="rejilla" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#39ff14" stroke-opacity=".06"/>
+    </pattern>
+    <filter id="brillo" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="a"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="a"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="marco"><rect width="1280" height="300" rx="20"/></clipPath>
+    <style>
+      text { font-family: "Segoe UI", Ubuntu, "Helvetica Neue", Arial, sans-serif; }
+      .flecha { animation: pulso 3.2s ease-in-out infinite; }
+      .linea { animation: barrido 4s ease-in-out infinite; }
+      @keyframes pulso { 0%, 100% { opacity: .78; } 50% { opacity: 1; } }
+      @keyframes barrido { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .flecha, .linea { animation: none; } }
+    </style>
+  </defs>
+
+  <g clip-path="url(#marco)">
+    <rect width="1280" height="300" fill="url(#fondo)"/>
+    <rect width="1280" height="300" fill="url(#rejilla)"/>
+    <rect width="1280" height="300" fill="url(#halo)"/>
+  </g>
+  <rect x="1" y="1" width="1278" height="298" rx="19" fill="none" stroke="#39ff14" stroke-opacity=".28"/>
+
+  <!-- Flecha doble de neón -->
+  <g class="flecha" transform="translate(110 72) scale(1.55)" fill="none" stroke-linejoin="miter" filter="url(#brillo)">
+    <path d="M12 14h22l28 36-28 36H12l28-36z" stroke="#39ff14" stroke-width="4.5"/>
+    <path d="M50 14h22l28 36-28 36H50l28-36z" stroke="#39ff14" stroke-width="4.5"/>
+    <path d="M12 14h22l28 36-28 36H12l28-36z" stroke="#d8ffcf" stroke-width="1.3"/>
+    <path d="M50 14h22l28 36-28 36H50l28-36z" stroke="#d8ffcf" stroke-width="1.3"/>
+  </g>
+
+  <text x="330" y="152" font-size="86" font-weight="800" fill="#ffffff" letter-spacing="8">AUDINC</text>
+  <text x="333" y="198" font-size="25" fill="#a3ada8">Evaluador de confidencialidad · ISO/IEC 27001:2022 · Oracle 21c XE</text>
+  <path class="linea" d="M334 226h560" stroke="#39ff14" stroke-width="3" stroke-linecap="round" filter="url(#brillo)"/>
+  <text x="333" y="262" font-size="18" fill="#6f7a75">EIF402 Administración de Bases de Datos · Universidad Nacional · II ciclo 2026</text>
+</svg>

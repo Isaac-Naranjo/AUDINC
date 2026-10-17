@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="400" viewBox="0 0 1000 400" role="img" aria-label="Ciclo PHVA de AUDINC: Planificar, Hacer, Verificar, Actuar">
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0f0d"/>
+      <stop offset="1" stop-color="#060807"/>
+    </linearGradient>
+    <marker id="punta" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#39ff14"/>
+    </marker>
+    <filter id="brillo" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="a"/>
+      <feMerge><feMergeNode in="a"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      text { font-family: "Segoe UI", Ubuntu, "Helvetica Neue", Arial, sans-serif; }
+      .mono { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
+      .titulo { font-size: 21px; font-weight: 800; letter-spacing: .04em; }
+      .letra { font-size: 40px; font-weight: 800; }
+      .texto { font-size: 14px; fill: #c3ccc7; }
+      .ruta { font-size: 12.5px; fill: #6f7a75; }
+      .flujo { stroke-dasharray: 6 8; animation: avanzar 1.2s linear infinite; }
+      @keyframes avanzar { to { stroke-dashoffset: -28; } }
+      @media (prefers-reduced-motion: reduce) { .flujo { animation: none; } }
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="398" rx="18" fill="url(#fondo)" stroke="#39ff14" stroke-opacity=".25"/>
+  <text x="500" y="42" text-anchor="middle" font-size="15" fill="#6f7a75" letter-spacing=".12em">CICLO PHVA APLICADO EN AUDINC</text>
+
+  <!-- Planificar -->
+  <rect x="24" y="70" width="218" height="200" rx="14" fill="#38bdf8" fill-opacity=".07" stroke="#38bdf8" stroke-opacity=".7"/>
+  <text x="44" y="118" class="letra" fill="#38bdf8">P</text>
+  <text x="84" y="113" class="titulo" fill="#38bdf8">PLANIFICAR</text>
+  <text x="44" y="152" class="texto">5 riesgos, 12 tareas,</text>
+  <text x="44" y="172" class="texto">16 controles observables</text>
+  <text x="44" y="192" class="texto">y la línea base</text>
+  <text x="44" y="236" class="mono ruta">00_setup/ · docs/</text>
+
+  <!-- Hacer -->
+  <rect x="268" y="70" width="218" height="200" rx="14" fill="#39ff14" fill-opacity=".07" stroke="#39ff14" stroke-opacity=".7"/>
+  <text x="288" y="118" class="letra" fill="#39ff14">H</text>
+  <text x="328" y="113" class="titulo" fill="#39ff14">HACER</text>
+  <text x="288" y="152" class="texto">Controles ISO aplicados:</text>
+  <text x="288" y="172" class="texto">perfiles, VPD, redaction,</text>
+  <text x="288" y="192" class="texto">auditoría, cifrado de red</text>
+  <text x="288" y="236" class="mono ruta">01_controles/</text>
+
+  <!-- Verificar -->
+  <rect x="512" y="70" width="218" height="200" rx="14" fill="#fbbf24" fill-opacity=".07" stroke="#fbbf24" stroke-opacity=".7"/>
+  <text x="532" y="118" class="letra" fill="#fbbf24">V</text>
+  <text x="572" y="113" class="titulo" fill="#fbbf24">VERIFICAR</text>
+  <text x="532" y="152" class="texto">El evaluador mide cada</text>
+  <text x="532" y="172" class="texto">control (nivel 0–4) y las</text>
+  <text x="532" y="192" class="texto">pruebas PT-01 … PT-23</text>
+  <text x="532" y="228" class="mono ruta">src/ · tests/</text>
+  <text x="532" y="246" class="mono ruta">02_verificacion/</text>
+
+  <!-- Actuar -->
+  <rect x="756" y="70" width="218" height="200" rx="14" fill="#f472b6" fill-opacity=".07" stroke="#f472b6" stroke-opacity=".7"/>
+  <text x="776" y="118" class="letra" fill="#f472b6">A</text>
+  <text x="816" y="113" class="titulo" fill="#f472b6">ACTUAR</text>
+  <text x="776" y="152" class="texto">Corrige lo que falló</text>
+  <text x="776" y="172" class="texto">(AC-01, AC-02) y registra</text>
+  <text x="776" y="192" class="texto">riesgos aceptados</text>
+  <text x="776" y="236" class="mono ruta">03_correccion/</text>
+
+  <!-- Flechas entre fases -->
+  <g stroke="#39ff14" stroke-width="2.5" fill="none" filter="url(#brillo)">
+    <path class="flujo" d="M244 170H264" marker-end="url(#punta)"/>
+    <path class="flujo" d="M488 170H508" marker-end="url(#punta)"/>
+    <path class="flujo" d="M732 170H752" marker-end="url(#punta)"/>
+    <!-- Retorno: Actuar vuelve a Planificar -->
+    <path class="flujo" d="M865 274V318Q865 334 849 334H149Q133 334 133 318V278" marker-end="url(#punta)"/>
+  </g>
+  <text x="500" y="364" text-anchor="middle" font-size="15" fill="#a3ada8">Resultado medido: <tspan fill="#ff6b6b" font-weight="700">2/16</tspan> controles en línea base → <tspan fill="#39ff14" font-weight="700">15/16</tspan> tras Hacer y Actuar</text>
+</svg>
