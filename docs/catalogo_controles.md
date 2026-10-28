@@ -1,6 +1,6 @@
-# Catálogo AUDINC — Riesgos, tareas, controles y pruebas (BORRADOR v0.1)
+# Catálogo AUDINC: riesgos, tareas, controles y pruebas
 
-> Estado: **borrador para revisión**. Base de evidencia: Oracle Database 21c XE 21.3, PDB `XEPDB1`.
+> Documento de trabajo del proyecto (versión final: 2026-10-28). Base de evidencia: Oracle Database 21c XE 21.3, PDB `XEPDB1`.
 > Escalas: Impacto y Probabilidad 1–5 · Nivel de riesgo = I × P (1–6 Bajo, 8–12 Medio, 15–25 Alto).
 
 ---
@@ -14,10 +14,10 @@
 | VPD / Fine-grained access control (`DBMS_RLS`) | TRUE | Sin políticas | Implementable |
 | Backup Encryption (RMAN) | TRUE | Sin configurar | Implementable |
 | Unified Auditing (modo puro) | FALSE | Modo **mixto**: `ORA_LOGON_FAILURES` y `ORA_SECURECONFIG` activas | Se usan políticas unificadas en modo mixto |
-| `audit_sys_operations` | TRUE | — | Ya cumple parcialmente A8.15 |
+| `audit_sys_operations` | TRUE | Sin cambios | Ya cumple parcialmente A8.15 |
 | Modo de log | ARCHIVELOG | `supplemental_log_data_min = NO` | LogMiner requiere activar log suplementario |
-| `resource_limit` | TRUE | — | `IDLE_TIME` en perfiles sí tiene efecto |
-| Oracle Label Security / Database Vault | FALSE | — | Fuera de alcance |
+| `resource_limit` | TRUE | Sin cambios | `IDLE_TIME` en perfiles sí tiene efecto |
+| Oracle Label Security / Database Vault | FALSE | No disponible en XE | Fuera de alcance |
 
 > Pendiente: confirmar en *Oracle Database 21c XE Licensing Information* que estas opciones están licenciadas en XE (fuente verificada para la tabla de IA).
 
@@ -146,7 +146,7 @@ Implementación: `EvaluadorServicio::calificar()` y `aplicarExcepciones()` en `s
 | PT-19 | Funcional | PEDRO falla el login hasta superar `FAILED_LOGIN_ATTEMPTS` | `ORA-28000` cuenta bloqueada | SQL*Plus |
 | PT-20 | Funcional | JUAN consulta `AUDINC_DEMO.EMPLEADOS` | `ORA-00942` / `ORA-01031` | SQL*Plus |
 | PT-21 | Funcional | Leer `UNIFIED_AUDIT_TRAIL` tras PT-17–PT-20 | Eventos registrados con usuario, acción y hora | SQL Developer |
-| PT-22 | Funcional | Login de la aplicación: sin sesión, LUIS (sin rol AUDITOR), ANA (AUDITOR), evaluación y cierre de sesión | 401 sin sesión; 403 LUIS; cookie HttpOnly/SameSite; evaluación a nombre de ANA (`CLIENT_IDENTIFIER`); 401 tras cerrar sesión | `php tests/PT-22_login.php` |
+| PT-22 | Funcional | Login de la aplicación: sin sesión, LUIS (sin rol AUDITOR), ISAAC (AUDITOR), evaluación y cierre de sesión | 401 sin sesión; 403 LUIS; cookie HttpOnly/SameSite; evaluación a nombre de ISAAC (`CLIENT_IDENTIFIER`); 401 tras cerrar sesión | `php tests/PT-22_login.php` |
 | PT-23 | Funcional | Ciclo Verificar → Actuar: `GRANT SELECT` de `CLIENTES` a `PUBLIC`, evaluación, `REVOKE`, evaluación | 1.ª evaluación: CO-02 No cumple con el permiso como evidencia; 2.ª: CO-02 Cumple. El `REVOKE` se ejecuta siempre | `php tests/PT-23_deteccion_y_correccion.php` |
 
 ---
@@ -158,9 +158,9 @@ Implementación: `EvaluadorServicio::calificar()` y `aplicarExcepciones()` en `s
 | CO-01 | 6 | Columnas sensibles sin clasificar |
 | CO-02 | 1 | `SELECT` sobre `CLIENTES` concedido a `PUBLIC` (brecha intencional) |
 | CO-03 | 6 | Cuentas abiertas nunca usadas (`TEMPORAL`, `PDBADMIN`, `C##BGBACKUP`, …) |
-| CO-04 | 0 | — |
+| CO-04 | 0 | Sin hallazgos |
 | CO-05 | 1 | `JUAN` con `SELECT` directo sobre `EMPLEADOS` (brecha intencional) |
-| CO-06 | 0 | — |
+| CO-06 | 0 | Sin hallazgos |
 | CO-07 | 1 | `LUIS` con `SELECT ANY TABLE` (brecha intencional) |
 | CO-08 | 1 | `VENTAS` sin VPD |
 | CO-09 | 8 | Usuarios con perfil `DEFAULT` |
@@ -176,26 +176,26 @@ Implementación: `EvaluadorServicio::calificar()` y `aplicarExcepciones()` en `s
 
 | CO | Línea base | Tras `01_controles` + PT-17…21 | Estado | Pendiente |
 |---|---|---|---|---|
-| CO-01 | 6 | 0 | Cumple | — |
-| CO-02 | 1 | 0 | Cumple | — |
+| CO-01 | 6 | 0 | Cumple | Ninguno |
+| CO-02 | 1 | 0 | Cumple | Ninguno |
 | CO-03 | 6 | 2 | Parcial | `PDBADMIN`, `C##BGBACKUP` (excepción propuesta) |
-| CO-04 | 0 | 0 | Cumple (4) | — |
-| CO-05 | 1 | 0 | Cumple | — |
-| CO-06 | 0 | 0 | Cumple (4) | — |
-| CO-07 | 1 | 0 | Cumple | — |
-| CO-08 | 1 | 0 | Cumple | — |
+| CO-04 | 0 | 0 | Cumple (4) | Ninguno |
+| CO-05 | 1 | 0 | Cumple | Ninguno |
+| CO-06 | 0 | 0 | Cumple (4) | Ninguno |
+| CO-07 | 1 | 0 | Cumple | Ninguno |
+| CO-08 | 1 | 0 | Cumple | Ninguno |
 | CO-09 | 8 | 2 | Parcial | `PDBADMIN`, `C##BGBACKUP` (excepción propuesta) |
-| CO-10 | 1 | 0 | Cumple | — |
-| CO-11 | 6 | 0 | Cumple | — |
+| CO-10 | 1 | 0 | Cumple | Ninguno |
+| CO-11 | 6 | 0 | Cumple | Ninguno |
 | CO-12 | 4 | 0 | Cumple | Ver acción correctiva AC-01 |
 | CO-13 | 7 | 7 | No cumple | Requiere TDE + aprobación (A8.13) |
-| CO-14 | 1 | 0 | Cumple | — |
+| CO-14 | 1 | 0 | Cumple | Ninguno |
 | CO-15 | 1 | 0 | Cumple | A8.20 aplicado: AES256 + SHA256 |
 | CO-16 | 2 | 2 | No cumple | Requiere aprobación (A8.24, reinicio) |
 
 **Resultado:** de 2 a 12 controles en Cumple. Todas las pruebas funcionales PT-17 a PT-21 dieron el resultado esperado.
 
-## 6.2.1 Fase Actuar — AC-02 (2026-10-16)
+## 6.2.1 Fase Actuar: AC-02 (2026-10-16)
 
 - CO-07 ampliado: ahora también detecta privilegios administrativos (`SYSDBA`, `SYSOPER`, `SYSBACKUP`, `SYSDG`, `SYSKM`) vía `V$PWFILE_USERS`. Detectó `C##BGBACKUP` con `SYSBACKUP`.
 - `PDBADMIN` (creado por el instalador de XE, nunca usado) → bloqueado.
@@ -204,7 +204,18 @@ Implementación: `EvaluadorServicio::calificar()` y `aplicarExcepciones()` en `s
 | Resultado | Línea base | Tras Hacer | Tras A8.20 | Tras AC-02 |
 |---|---|---|---|---|
 | Controles en Cumple | 2 / 16 | 11 / 16 | 12 / 16 | **15 / 16** |
-| Pendiente | — | — | — | CO-16 (A8.24 TDE, pospuesto) |
+| Pendiente | 14 controles | 5 controles | 4 controles | CO-16 (A8.24 TDE, pospuesto) |
+
+## 6.2.2 Cierre del ciclo: AC-03, AC-04 y A8.24 (2026-10-28)
+
+- **AC-03:** la cuenta de prueba `ANA` se reemplazó por `ISAAC`, cuenta nominal del responsable de la auditoría (rol `AUDITOR`, perfil `AUDINC_SEGURO`). El histórico anterior queda a nombre de `ANA`.
+- **AC-04:** excepción de CO-13 para las piezas RMAN de BackupGuard guardadas en `C:\APP\ISAAC\PRODUCT\21C\DBHOMEXE\DATABASE\` (BackupGuard ya no genera respaldos).
+- **A8.24 (TDE):** keystore auto-login en modo unido y tablespace cifrado `AUDINC_DATOS` (AES-256) con las tablas de `AUDINC_DEMO`. CO-16 pasa a Cumple.
+- **Auditoría por cuenta:** nueva sección de la aplicación que revisa cada cuenta de usuario contra 7 requisitos (A8.5, A5.17, A5.16, A8.2, A5.18, A8.15). Resultado: 11 cuentas, 10 cumplen y 1 cumple con excepción (`C##BGBACKUP`).
+
+| Resultado | Tras AC-02 | Tras AC-03 y AC-04 (#41) | Tras A8.24 (#42) |
+|---|---|---|---|
+| Controles en Cumple | 15 / 16 | 15 / 16 | **16 / 16** |
 
 ## 6.3 Alcance: qué controles son de la PDB y cuáles de toda la instancia
 
@@ -223,4 +234,4 @@ Datos ficticios con información personal protegida por la Ley 8968:
 - `CLIENTES` (cédula, nombre, email, teléfono, dirección) → redaction + clasificación.
 - `VENTAS` (id, vendedor, cliente, monto) → VPD por vendedor.
 - `EMPLEADOS` (cédula, salario) → TDE de columna/tablespace.
-- Roles: `VENDEDOR`, `AUDITOR`, `SUPERVISOR`. Usuarios de ejemplo: `JUAN` (vendedor), `ANA` (auditora).
+- Roles: `VENDEDOR`, `AUDITOR`, `SUPERVISOR`. Usuarios de ejemplo: `JUAN` (vendedor), `ISAAC` (auditor).

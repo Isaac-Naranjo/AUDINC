@@ -30,7 +30,7 @@ CREATE PROFILE audinc_servicio LIMIT
 
 ALTER USER juan       PROFILE audinc_seguro;
 ALTER USER pedro      PROFILE audinc_seguro;
-ALTER USER ana        PROFILE audinc_seguro;
+ALTER USER isaac      PROFILE audinc_seguro;
 ALTER USER luis       PROFILE audinc_seguro;
 ALTER USER temporal   PROFILE audinc_seguro;
 ALTER USER audinc_app PROFILE audinc_servicio;

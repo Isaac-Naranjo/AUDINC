@@ -26,12 +26,12 @@ GRANT audit_viewer TO auditor;
 
 CREATE USER juan  IDENTIFIED BY "&pwd_demo" DEFAULT TABLESPACE users;
 CREATE USER pedro IDENTIFIED BY "&pwd_demo" DEFAULT TABLESPACE users;
-CREATE USER ana   IDENTIFIED BY "&pwd_demo" DEFAULT TABLESPACE users;
+CREATE USER isaac IDENTIFIED BY "&pwd_demo" DEFAULT TABLESPACE users;
 CREATE USER luis  IDENTIFIED BY "&pwd_demo" DEFAULT TABLESPACE users;
 
 GRANT vendedor   TO juan;
 GRANT vendedor   TO pedro;
-GRANT auditor    TO ana;
+GRANT auditor    TO isaac;
 GRANT supervisor TO luis;
 
 -- ---------------------------------------------------------------------

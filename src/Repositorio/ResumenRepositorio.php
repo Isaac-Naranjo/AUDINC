@@ -7,7 +7,8 @@ use Audinc\Database;
 
 /**
  * Datos agregados para la pantalla de inicio: estado de la última evaluación,
- * evolución histórica, cobertura de cada riesgo y excepciones por vencer.
+ * evolución histórica, cobertura de cada riesgo, cuentas de usuario auditadas
+ * y excepciones por vencer.
  */
 final class ResumenRepositorio
 {
@@ -15,7 +16,8 @@ final class ResumenRepositorio
 
     public function __construct(
         private readonly Database $db,
-        private readonly EvaluacionRepositorio $evaluaciones
+        private readonly EvaluacionRepositorio $evaluaciones,
+        private readonly CuentasRepositorio $cuentas
     ) {
     }
 
@@ -29,6 +31,7 @@ final class ResumenRepositorio
             'evolucion'         => $historial,
             'riesgos'           => $ultima ? $this->coberturaRiesgos($ultima['id_evaluacion']) : [],
             'pendientes'        => $ultima ? $this->pendientes($ultima['id_evaluacion']) : [],
+            'cuentas'           => $this->cuentas->totales(),
             'excepciones'       => $this->excepciones(),
         ];
     }

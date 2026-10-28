@@ -13,7 +13,7 @@ WHENEVER SQLERROR EXIT SQL.SQLCODE ROLLBACK
 ALTER SESSION SET CONTAINER = XEPDB1;
 
 ACCEPT pwd_app  CHAR PROMPT 'Contrasena para AUDINC_APP (cuenta del evaluador PHP): ' HIDE
-ACCEPT pwd_demo CHAR PROMPT 'Contrasena para usuarios de prueba (JUAN, PEDRO, ANA, LUIS, TEMPORAL): ' HIDE
+ACCEPT pwd_demo CHAR PROMPT 'Contrasena para usuarios de prueba (JUAN, PEDRO, ISAAC, LUIS, TEMPORAL): ' HIDE
 
 PROMPT === 01. Esquema de prueba AUDINC_DEMO ===
 @@01_esquema_demo.sql

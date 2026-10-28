@@ -2,18 +2,23 @@
 -- A8.24 Uso de criptografía (complementario) — TDE         (PHVA: Hacer)
 -- Riesgo: R-CONF-03 · Tarea: T-04 · Verificación: CO-16
 --
--- !!! PENDIENTE DE APROBACIÓN — LEER ANTES DE EJECUTAR !!!
---  * Reinicia la instancia (SHUTDOWN / STARTUP).
+-- !!! LEER ANTES DE EJECUTAR !!!
+-- Aprobado el 2026-10-28: BackupGuard ya fue presentado y no genera más
+-- respaldos.
+--  * Reinicia la instancia (SHUTDOWN / STARTUP): afecta unos segundos a
+--    todas las PDB (XEPDB1, BANCO); se reabren solas (estado guardado).
 --  * Crea un keystore (wallet). SI EL KEYSTORE SE PIERDE, LOS DATOS DEL
 --    TABLESPACE CIFRADO SON IRRECUPERABLES: respaldar la carpeta del wallet
---    y guardar su contraseña fuera del repositorio.
+--    y guardar su contraseña fuera del repositorio
+--    (credenciales.local.sql, ignorado por git).
 --  * Solo se cifra un tablespace nuevo (AUDINC_DATOS) con los datos de
---    AUDINC_DEMO; USERS y los demás tablespaces no se tocan.
+--    AUDINC_DEMO; USERS, FARMACIA y los demás tablespaces no se tocan.
 --
--- Ejecutar como SYS AS SYSDBA conectado al CDB raíz, POR PASOS:
+-- Antes de ejecutar, crear la carpeta del keystore:
+--   mkdir C:\app\isaac\product\21c\admin\XE\wallet\tde
+-- Ejecutar como SYS AS SYSDBA conectado al CDB raíz:
 --   sqlplus / as sysdba @A8.24_tde.sql
--- Antes de ejecutar crear las carpetas:
---   mkdir C:\app\isaac\admin\XE\wallet\tde
+-- Después: respaldar la carpeta del wallet (ver el final del script).
 -- =====================================================================
 SET VERIFY OFF
 WHENEVER SQLERROR EXIT SQL.SQLCODE ROLLBACK
@@ -21,9 +26,11 @@ ACCEPT pwd_keystore CHAR PROMPT 'Contrasena del keystore TDE (guardela fuera del
 
 -- Paso 1 · Ubicación del keystore (parámetro estático: requiere reinicio)
 ALTER SESSION SET CONTAINER = CDB$ROOT;
-ALTER SYSTEM SET WALLET_ROOT = 'C:\app\isaac\admin\XE\wallet' SCOPE = SPFILE;
+ALTER SYSTEM SET WALLET_ROOT = 'C:\app\isaac\product\21c\admin\XE\wallet' SCOPE = SPFILE;
 SHUTDOWN IMMEDIATE
 STARTUP
+-- Las PDB con estado guardado (XEPDB1, BANCO) se abren solas; se verifica
+SELECT name, open_mode FROM v$pdbs;
 
 -- Paso 2 · Keystore de software y llaves maestras (modo unido: CDB + PDB)
 ALTER SYSTEM SET TDE_CONFIGURATION = 'KEYSTORE_CONFIGURATION=FILE' SCOPE = BOTH;
@@ -55,5 +62,9 @@ ALTER TABLE audinc_demo.empleados MOVE TABLESPACE audinc_datos UPDATE INDEXES;
 SELECT wrl_type, status, wallet_type FROM v$encryption_wallet;
 SELECT tablespace_name, encrypted FROM dba_tablespaces WHERE tablespace_name = 'AUDINC_DATOS';
 SELECT table_name, tablespace_name FROM dba_tables WHERE owner = 'AUDINC_DEMO';
+SELECT index_name, status FROM dba_indexes WHERE owner = 'AUDINC_DEMO';
 
 UNDEFINE pwd_keystore
+
+-- Respaldo del keystore (fuera de la carpeta de Oracle):
+HOST robocopy "C:\app\isaac\product\21c\admin\XE\wallet" "C:\Users\isaac\Documents\AUDINC_wallet_respaldo" /E

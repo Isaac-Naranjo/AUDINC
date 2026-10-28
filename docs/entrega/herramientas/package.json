@@ -1,0 +1,12 @@
+{
+  "name": "audinc-documentacion",
+  "private": true,
+  "description": "Convierte los documentos de entrega (Markdown) a PDF con Microsoft Edge en modo headless",
+  "type": "module",
+  "scripts": {
+    "pdf": "node generar_pdf.mjs"
+  },
+  "dependencies": {
+    "marked": "12.0.2"
+  }
+}

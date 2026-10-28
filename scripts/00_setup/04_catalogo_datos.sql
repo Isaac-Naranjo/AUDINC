@@ -351,8 +351,8 @@ INSERT INTO audinc_owner.prueba VALUES ('PT-21', 'CO-14', 'FUNCIONAL',
   'Los eventos aparecen con usuario, acción, objeto y hora', 'SQL Developer');
 
 INSERT INTO audinc_owner.prueba VALUES ('PT-22', 'CO-09', 'FUNCIONAL',
-  'Login de la aplicación: sin sesión, LUIS (sin rol AUDITOR), ANA (AUDITOR), evaluación, cierre de sesión',
-  '401 sin sesión; 403 LUIS; ANA entra con cookie HttpOnly/SameSite; evaluación a nombre de ANA; 401 tras cerrar sesión',
+  'Login de la aplicación: sin sesión, LUIS (sin rol AUDITOR), ISAAC (AUDITOR), evaluación, cierre de sesión',
+  '401 sin sesión; 403 LUIS; ISAAC entra con cookie HttpOnly/SameSite; evaluación a nombre de ISAAC; 401 tras cerrar sesión',
   'php tests/PT-22_login.php');
 
 INSERT INTO audinc_owner.prueba VALUES ('PT-23', 'CO-02', 'FUNCIONAL',

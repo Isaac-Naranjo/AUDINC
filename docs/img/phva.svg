@@ -71,5 +71,5 @@
     <!-- Retorno: Actuar vuelve a Planificar -->
     <path class="flujo" d="M865 274V318Q865 334 849 334H149Q133 334 133 318V278" marker-end="url(#punta)"/>
   </g>
-  <text x="500" y="364" text-anchor="middle" font-size="15" fill="#a3ada8">Resultado medido: <tspan fill="#ff6b6b" font-weight="700">2/16</tspan> controles en línea base → <tspan fill="#39ff14" font-weight="700">15/16</tspan> tras Hacer y Actuar</text>
+  <text x="500" y="364" text-anchor="middle" font-size="15" fill="#a3ada8">Resultado medido: <tspan fill="#ff6b6b" font-weight="700">2/16</tspan> controles en línea base → <tspan fill="#39ff14" font-weight="700">16/16</tspan> tras Hacer y Actuar</text>
 </svg>

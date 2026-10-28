@@ -25,7 +25,7 @@ const CORRECCION = 'REVOKE SELECT ON audinc_demo.clientes FROM PUBLIC';
 
 $api = new ClienteApi(rtrim($argv[1] ?? 'http://localhost:8000', '/'));
 $registro = new Registro('PT-23 · Detección y corrección de una brecha (A5.15 / CO-02)');
-$contrasena = leerContrasena('Contraseña de ANA: ');
+$contrasena = leerContrasena('Contraseña de ISAAC: ');
 
 /** Ejecuta una evaluación y devuelve el detalle de CO-02. */
 function evaluarCo02(ClienteApi $api, Registro $registro, string $observacion): ?array
@@ -42,8 +42,8 @@ function evaluarCo02(ClienteApi $api, Registro $registro, string $observacion): 
 }
 
 try {
-    [$codigo] = $api->iniciarSesion('ANA', $contrasena);
-    if (!$registro->caso('Inicio de sesión como ANA (AUDITOR)', 200, $codigo)) {
+    [$codigo] = $api->iniciarSesion('ISAAC', $contrasena);
+    if (!$registro->caso('Inicio de sesión como ISAAC (AUDITOR)', 200, $codigo)) {
         exit($registro->cerrar('PT-23_deteccion_y_correccion.txt'));
     }
 

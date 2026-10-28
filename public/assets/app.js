@@ -36,7 +36,8 @@ function s(etiqueta, atributos, ...hijos) {
 const $ = (selector) => document.querySelector(selector);
 
 function claseEstado(estado) {
-  return { 'Cumple': 'ok', 'Parcial': 'parcial', 'No cumple': 'mal' }[estado] || '';
+  return { 'Cumple': 'ok', 'Parcial': 'parcial', 'No cumple': 'mal',
+    'Cumple con excepción': 'parcial', 'Exceptuado': 'parcial' }[estado] || '';
 }
 
 function etiquetaEstado(estado) {
@@ -237,12 +238,14 @@ async function vistaInicio() {
     return [h('p', { class: 'intro', text: 'Todavía no hay evaluaciones. Ejecute la primera para obtener la línea base.' })];
   }
   const total = u.cumple + u.parcial + u.no_cumple;
-  const kpi = (titulo, valor, pie, clase) => h('section', { class: `tarjeta kpi ${clase || ''}` },
+  const kpi = (titulo, valor, pie, clase, enlace) => h(enlace ? 'a' : 'section',
+    { class: `tarjeta kpi ${clase || ''} ${enlace ? 'kpi-enlace' : ''}`, href: enlace },
     h('div', { class: 'kpi-titulo', text: titulo }),
     h('div', { class: 'kpi-valor' }, valor),
     h('div', { class: 'kpi-pie', text: pie }));
 
   const exc = r.excepciones;
+  const cu = r.cuentas;
 
   // Cobertura por riesgo: las barras empiezan en 0 y se animan al mostrarse la vista
   const barrasCobertura = [];
@@ -277,6 +280,9 @@ async function vistaInicio() {
       kpi('Parciales', String(u.parcial), 'Con mejora respecto a la línea base', 'parcial'),
       kpi('No cumplen', String(u.no_cumple), 'Requieren acción', 'mal'),
       kpi('Nivel promedio', [String(u.nivel_promedio ?? '—'), h('small', { text: ' / 4' })], 'Madurez 0 – 4'),
+      kpi('Cuentas de usuario auditadas', String(cu.auditadas),
+        `${cu.cumplen} cumplen · ${cu.con_excepcion} con excepción · ${cu.no_cumplen} no cumple${cu.no_cumplen === 1 ? '' : 'n'} →`,
+        cu.no_cumplen > 0 ? 'mal' : cu.con_excepcion > 0 ? 'parcial' : 'ok', '#/cuentas'),
       kpi('Excepciones vigentes', String(exc.vigentes),
         exc.por_vencer > 0 ? `${exc.por_vencer} vencen en 30 días` : `Próximo vencimiento: ${fecha(exc.proximo_vencimiento).slice(0, 10)}`)),
     h('div', { class: 'rejilla rejilla-2 seccion' },
@@ -567,6 +573,139 @@ async function vistaEvaluacion(id) {
   ];
 }
 
+/* Requisitos por cuenta: símbolo corto para la matriz y etiqueta completa para el detalle */
+const SIMBOLO_REQUISITO = {
+  'Cumple': ['✓', 'ok'], 'No cumple': ['✗', 'mal'], 'Exceptuado': ['E', 'parcial'], 'No aplica': ['—', ''],
+};
+
+const COLUMNA_REQUISITO = {
+  perfil: 'Perfil', politica: 'Política', contrasena: 'Contraseña', uso: 'En uso',
+  privilegios: 'Privilegios', roles: 'Por roles', auditoria: 'Auditada',
+};
+
+function marcaRequisito(r) {
+  const [simbolo, clase] = SIMBOLO_REQUISITO[r.estado] || ['?', ''];
+  return h('span', { class: `etiqueta marca ${clase}`, title: `${r.titulo}: ${r.estado}. ${r.detalle}`,
+    'aria-label': `${r.titulo}: ${r.estado}`, text: simbolo });
+}
+
+function etiquetaCuenta(estado) {
+  return h('span', { class: `etiqueta ${estado === 'OPEN' ? 'ok' : ''}`, text: estado });
+}
+
+const rutaCuenta = (usuario) => `#/cuentas/${encodeURIComponent(usuario)}`;
+
+async function vistaCuentas() {
+  const { totales: t, cuentas } = await api('GET', '/api/cuentas');
+  const kpi = (titulo, valor, pie, clase) => h('section', { class: `tarjeta kpi ${clase || ''}` },
+    h('div', { class: 'kpi-titulo', text: titulo }), h('div', { class: 'kpi-valor', text: valor }), h('div', { class: 'kpi-pie', text: pie }));
+
+  const requisitos = cuentas.length ? cuentas[0].requisitos : [];
+  const contenedor = h('div');
+  const filtroEstado = h('select', { id: 'filtro-estado-cuenta' },
+    ['Todos', 'Cumple', 'Cumple con excepción', 'No cumple'].map((e) => h('option', { value: e, text: e })));
+  const filtroTexto = h('input', { id: 'filtro-texto-cuenta', type: 'search', placeholder: 'Usuario, perfil o rol…' });
+
+  const pintar = () => {
+    const estado = filtroEstado.value;
+    const texto = filtroTexto.value.trim().toLowerCase();
+    const filas = cuentas.filter((c) => (estado === 'Todos' || c.estado === estado)
+      && (!texto || [c.usuario, c.profile, c.tipo, ...c.roles].join(' ').toLowerCase().includes(texto)));
+    contenedor.replaceChildren(tabla([
+      { t: 'Usuario', v: (c) => h('div', null, h('a', { href: rutaCuenta(c.usuario), text: c.usuario }), h('div', { class: 'tenue', text: c.tipo })) },
+      { t: 'Cuenta y perfil', v: (c) => h('div', null, etiquetaCuenta(c.account_status), h('div', null, h('code', { class: 'tenue', text: c.profile }))) },
+      { t: 'Roles', v: (c) => chips(c.roles) },
+      ...requisitos.map((r, i) => ({ t: COLUMNA_REQUISITO[r.id] || r.control, clase: 'centro', v: (c) => marcaRequisito(c.requisitos[i]) })),
+      { t: 'Resultado', v: (c) => h('div', null, etiquetaEstado(c.estado),
+        h('div', { class: 'tenue', text: `${c.cumplidos}/${c.aplicables} requisitos` })) },
+    ], filas, { vacio: 'Ninguna cuenta coincide con el filtro.' }));
+  };
+  filtroEstado.addEventListener('change', pintar);
+  filtroTexto.addEventListener('input', pintar);
+  pintar();
+
+  return [
+    h('p', { class: 'intro', text: 'Auditoría de cada cuenta de Oracle creada en XEPDB1 (las cuentas internas de Oracle no se incluyen). '
+      + 'Cada cuenta se revisa contra los requisitos de confidencialidad que le aplican, con los mismos criterios de los controles observables. '
+      + 'Se calcula en vivo desde el diccionario de datos.' }),
+    h('div', { class: 'rejilla rejilla-kpi' },
+      kpi('Cuentas auditadas', String(t.auditadas), `${t.abiertas} abiertas`),
+      kpi('Cumplen', String(t.cumplen), 'Todos los requisitos aplicables', 'ok'),
+      kpi('Con excepción', String(t.con_excepcion), 'Incumplimiento con riesgo aceptado', 'parcial'),
+      kpi('No cumplen', String(t.no_cumplen), 'Requieren acción', 'mal')),
+    h('div', { class: 'seccion' },
+      tarjeta('Requisitos evaluados', 'Pase el cursor sobre cada marca para ver el detalle; abra una cuenta para ver toda la evidencia.',
+        h('ul', { class: 'lista lista-requisitos' }, requisitos.map((r) => h('li', null,
+          h('div', { class: 'cabeza' }, h('span', { class: 'chip', text: r.control }),
+            r.co ? h('span', { class: 'chip', text: r.co }) : null, h('strong', { text: r.titulo })),
+          h('p', { text: r.criterio })))),
+        h('p', { class: 'leyenda-marcas' },
+          ['Cumple', 'No cumple', 'Exceptuado', 'No aplica'].map((e) => h('span', null,
+            marcaRequisito({ estado: e, titulo: e, detalle: '' }), ` ${e}`))))),
+    h('div', { class: 'filtros seccion' },
+      h('div', null, h('label', { for: 'filtro-estado-cuenta', text: 'Resultado' }), filtroEstado),
+      h('div', null, h('label', { for: 'filtro-texto-cuenta', text: 'Buscar' }), filtroTexto)),
+    contenedor,
+  ];
+}
+
+const NOMBRES_PARAMETRO = {
+  FAILED_LOGIN_ATTEMPTS: 'Intentos fallidos antes del bloqueo',
+  PASSWORD_LOCK_TIME: 'Duración del bloqueo (días)',
+  PASSWORD_LIFE_TIME: 'Vigencia de la contraseña (días)',
+  PASSWORD_GRACE_TIME: 'Período de gracia (días)',
+  PASSWORD_REUSE_TIME: 'Días antes de reutilizar',
+  PASSWORD_REUSE_MAX: 'Cambios antes de reutilizar',
+  PASSWORD_VERIFY_FUNCTION: 'Función de complejidad',
+  IDLE_TIME: 'Inactividad máxima (min)',
+  SESSIONS_PER_USER: 'Sesiones simultáneas',
+};
+
+async function vistaCuenta(usuario) {
+  const c = await api('GET', `/api/cuentas/${encodeURIComponent(usuario)}`);
+  const parametros = Object.keys(NOMBRES_PARAMETRO).filter((p) => p in c.parametros_perfil);
+  return [
+    h('p', { class: 'intro' }, h('a', { href: '#/cuentas', text: '← Cuentas de usuario' })),
+    h('div', { class: 'rejilla rejilla-2' },
+      tarjeta('Cuenta', null, h('dl', { class: 'datos' },
+        h('dt', { text: 'Usuario' }), h('dd', { text: c.usuario }),
+        h('dt', { text: 'Tipo' }), h('dd', { text: c.tipo }),
+        h('dt', { text: 'Resultado' }), h('dd', null, etiquetaEstado(c.estado), ` ${c.cumplidos}/${c.aplicables} requisitos`),
+        h('dt', { text: 'Estado de la cuenta' }), h('dd', null, etiquetaCuenta(c.account_status)),
+        h('dt', { text: 'Autenticación' }), h('dd', { text: c.authentication_type }),
+        h('dt', { text: 'Perfil' }), h('dd', null, h('code', { text: c.profile })),
+        h('dt', { text: 'Roles' }), h('dd', null, c.roles.length ? chips(c.roles) : '—'),
+        h('dt', { text: 'Creada' }), h('dd', { text: c.creada }),
+        h('dt', { text: 'Último acceso' }), h('dd', { text: fecha(c.ultimo_acceso) }),
+        h('dt', { text: 'Contraseña vence' }), h('dd', { text: c.vence_contrasena || 'No vence' }),
+        c.bloqueada_desde ? [h('dt', { text: 'Bloqueada desde' }), h('dd', { text: c.bloqueada_desde })] : null,
+        h('dt', { text: 'Fallidos (30 días)' }), h('dd', null,
+          h('span', { class: `etiqueta ${c.fallidos_30_dias > 0 ? 'mal' : 'ok'}`, text: c.fallidos_30_dias })))),
+      tarjeta(`Perfil ${c.profile}`, 'Parámetros efectivos (los valores DEFAULT se toman del perfil DEFAULT)',
+        parametros.length === 0 ? h('p', { class: 'tenue', text: 'Sin parámetros.' }) : h('dl', { class: 'datos' },
+          parametros.map((p) => [h('dt', { text: NOMBRES_PARAMETRO[p] }), h('dd', null, h('code', { text: c.parametros_perfil[p] }))])))),
+    h('div', { class: 'evidencia seccion' }, c.requisitos.map((r) => h('section', { class: 'tarjeta' },
+      h('div', { class: 'tarjeta-cabeza' },
+        h('h4', null, h('span', { class: 'chip', text: r.control }), ' ', r.co ? [h('span', { class: 'chip', text: r.co }), ' '] : null, r.titulo),
+        h('span', { class: `etiqueta ${claseEstado(r.estado)}`, text: r.estado })),
+      h('p', { class: 'justificacion', text: `Criterio: ${r.criterio}` }),
+      h('p', { text: r.detalle })))),
+    h('div', { class: 'rejilla rejilla-2 seccion' },
+      tarjeta('Políticas de auditoría que la cubren', 'Auditoría unificada habilitada para esta cuenta (A8.15)',
+        tabla([
+          { t: 'Política', v: (p) => h('code', { text: p.policy_name }) },
+          { t: 'Exitosos', v: (p) => (p.exitosos ? 'Sí' : 'No') },
+          { t: 'Fallidos', v: (p) => (p.fallidos ? 'Sí' : 'No') },
+        ], c.politicas_auditoria, { vacio: 'Ninguna política de auditoría alcanza a esta cuenta.' })),
+      tarjeta('Intentos fallidos de inicio de sesión (30 días)', 'Registrados por la política ORA_LOGON_FAILURES',
+        tabla([
+          { t: 'Fecha y hora', v: (f) => f.hora, clase: 'mono' },
+          { t: 'Error Oracle', v: (f) => h('code', { text: `ORA-${String(f.codigo_ora).padStart(5, '0')}` }) },
+          { t: 'Equipo', v: (f) => f.equipo },
+        ], c.intentos_fallidos, { vacio: 'Sin intentos fallidos en los últimos 30 días.' }))),
+  ];
+}
+
 async function vistaExcepciones() {
   const excepciones = await api('GET', '/api/excepciones');
   return [
@@ -620,6 +759,7 @@ const rutas = {
   inicio: { titulo: 'Inicio', vista: vistaInicio },
   evaluaciones: { titulo: 'Evaluaciones', vista: vistaEvaluaciones },
   matriz: { titulo: 'Matriz de evaluación', vista: vistaMatriz },
+  cuentas: { titulo: 'Cuentas de usuario', vista: vistaCuentas },
   riesgos: { titulo: 'Riesgos de confidencialidad', vista: vistaRiesgos },
   tareas: { titulo: 'Tareas del DBA', vista: vistaTareas },
   controles: { titulo: 'Controles ISO/IEC 27001:2022', vista: vistaControles },
@@ -640,6 +780,14 @@ async function enrutar() {
   if (seccion === 'evaluaciones' && id && /^\d{1,9}$/.test(id)) {
     vista = () => vistaEvaluacion(id);
     titulo = `Evaluación #${id}`;
+  }
+  if (seccion === 'cuentas' && id) {
+    let usuario = '';
+    try { usuario = decodeURIComponent(id); } catch { /* hash mal formado: se muestra la lista */ }
+    if (/^[A-Za-z][A-Za-z0-9_$#]{0,127}$/.test(usuario)) {
+      vista = () => vistaCuenta(usuario);
+      titulo = `Cuenta ${usuario.toUpperCase()}`;
+    }
   }
 
   document.querySelectorAll('#menu nav a').forEach((a) => a.classList.toggle('activo', a.dataset.ruta === (rutas[seccion] ? seccion : 'inicio')));

@@ -28,7 +28,7 @@ DROP USER audinc_sec CASCADE;
 DROP USER audinc_app   CASCADE;
 DROP USER juan         CASCADE;
 DROP USER pedro        CASCADE;
-DROP USER ana          CASCADE;
+DROP USER isaac        CASCADE;
 DROP USER luis         CASCADE;
 DROP USER temporal     CASCADE;
 DROP USER audinc_demo  CASCADE;
@@ -42,5 +42,9 @@ DROP ROLE auditor;
 -- Perfiles (después de borrar los usuarios que los usan)
 DROP PROFILE audinc_seguro   CASCADE;
 DROP PROFILE audinc_servicio CASCADE;
+
+-- A8.24: tablespace cifrado (queda vacío al borrar AUDINC_DEMO). El keystore NO se
+-- elimina: es de toda la instancia y lo necesitan los respaldos que contengan datos cifrados.
+DROP TABLESPACE audinc_datos INCLUDING CONTENTS AND DATAFILES;
 
 PROMPT === Limpieza AUDINC completada ===

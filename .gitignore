@@ -18,3 +18,7 @@ video/*.mov
 .vscode/
 Thumbs.db
 desktop.ini
+
+# Documentación: dependencias de la herramienta de PDF y HTML temporales
+node_modules/
+docs/entrega/.*.tmp.html

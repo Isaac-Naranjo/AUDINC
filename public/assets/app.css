@@ -488,3 +488,13 @@ pre.sql {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
 }
+
+/* ---------- Cuentas de usuario ---------- */
+a.kpi-enlace { display: block; color: inherit; text-decoration: none; transition: border-color .2s ease, box-shadow .2s ease; }
+a.kpi-enlace:hover, a.kpi-enlace:focus-visible { border-color: var(--acento); box-shadow: var(--sombra), 0 0 0 1px var(--acento-suave); }
+a.kpi-enlace .kpi-pie { color: var(--texto-2); }
+td.centro, th.centro { text-align: center; }
+.etiqueta.marca { min-width: 26px; padding: 2px 6px; text-align: center; cursor: help; }
+.lista-requisitos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); column-gap: 24px; }
+.lista-requisitos li:last-child { border-bottom: 1px solid var(--borde); }
+.leyenda-marcas { display: flex; flex-wrap: wrap; gap: 16px; margin: 14px 0 0; font-size: 13px; color: var(--texto-2); }

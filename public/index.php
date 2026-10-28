@@ -25,6 +25,7 @@ use Audinc\BaseDatosException;
 use Audinc\Database;
 use Audinc\Repositorio\ActividadRepositorio;
 use Audinc\Repositorio\CatalogoRepositorio;
+use Audinc\Repositorio\CuentasRepositorio;
 use Audinc\Repositorio\EvaluacionRepositorio;
 use Audinc\Repositorio\ResumenRepositorio;
 use Audinc\Seguridad\Autenticacion;
@@ -90,6 +91,8 @@ if ($ruta === '/api') {
             'DELETE /api/sesion',
             'GET    /api/mi-actividad',
             'GET    /api/resumen',
+            'GET    /api/cuentas',
+            'GET    /api/cuentas/{usuario}',
             'GET    /api/riesgos',
             'GET    /api/tareas',
             'GET    /api/controles',
@@ -149,10 +152,12 @@ try {
     $db->establecerUsuarioFinal($usuario);
     $catalogo     = new CatalogoRepositorio($db);
     $evaluaciones = new EvaluacionRepositorio($db);
+    $cuentas      = new CuentasRepositorio($db, $catalogo);
 
     $rutasGet = [
         '/api/mi-actividad'          => fn() => (new ActividadRepositorio($db))->de($usuario, Sesion::dato('acceso_anterior')),
-        '/api/resumen'               => fn() => (new ResumenRepositorio($db, $evaluaciones))->resumen(),
+        '/api/resumen'               => fn() => (new ResumenRepositorio($db, $evaluaciones, $cuentas))->resumen(),
+        '/api/cuentas'               => fn() => $cuentas->auditar(),
         '/api/riesgos'               => fn() => $catalogo->riesgos(),
         '/api/tareas'                => fn() => $catalogo->tareas(),
         '/api/controles'             => fn() => $catalogo->controlesIso(),
@@ -170,6 +175,16 @@ try {
     if ($metodo === 'GET' && preg_match('#^/api/evaluaciones/(\d{1,9})$#', $ruta, $m)) {
         $evaluacion = $evaluaciones->obtener((int) $m[1]);
         responder($evaluacion ? 200 : 404, $evaluacion ?? ['error' => 'Evaluación no encontrada']);
+    }
+
+    // Los usuarios comunes llevan '#' (C##...), que llega codificado como %23
+    if ($metodo === 'GET' && preg_match('#^/api/cuentas/([A-Za-z0-9_$%]{1,400})$#', $ruta, $m)) {
+        $nombre = strtoupper(rawurldecode($m[1]));
+        if (!preg_match('/^[A-Z][A-Z0-9_$#]{0,127}$/', $nombre)) {
+            responder(404, ['error' => 'Cuenta no encontrada']);
+        }
+        $cuenta = $cuentas->cuenta($nombre);
+        responder($cuenta ? 200 : 404, $cuenta ?? ['error' => 'Cuenta no encontrada']);
     }
 
     if ($metodo === 'POST' && $ruta === '/api/evaluaciones') {

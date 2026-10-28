@@ -62,7 +62,7 @@ INSERT INTO audinc_demo.ventas VALUES (12, 5,  'JUAN',   66600.00, DATE '2026-09
 
 INSERT INTO audinc_demo.empleados VALUES (1, '9-0202-0001', 'Juan Pérez Alfaro',    'Vendedor',   650000.00, 'JUAN');
 INSERT INTO audinc_demo.empleados VALUES (2, '9-0202-0002', 'Pedro Gómez Vindas',   'Vendedor',   640000.00, 'PEDRO');
-INSERT INTO audinc_demo.empleados VALUES (3, '9-0202-0003', 'Ana Ramírez Castro',   'Auditora',   980000.00, 'ANA');
+INSERT INTO audinc_demo.empleados VALUES (3, '9-0202-0003', 'Isaac Naranjo',        'Auditor',    980000.00, 'ISAAC');
 INSERT INTO audinc_demo.empleados VALUES (4, '9-0202-0004', 'Luis Araya Montero',   'Supervisor', 1150000.00,'LUIS');
 
 COMMIT;
